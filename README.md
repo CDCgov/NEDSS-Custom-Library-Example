@@ -97,48 +97,12 @@ There is one table named `NBS_ODSE.dbo.Report_Library` that must be manually upd
     );
 ```
 
-- For `library_name`, use the Python filename without the `.py` extension (e.g. `custom_report.py` -> `custom_report`).
-- For `desc_txt`, write a descriptive sentence or two which will give meaning to anyone reading it from the NBS UI.  
+- For `library_name`, the value **MUST** be the Python libary's filename without the `.py` extension (e.g. `custom_report.py` -> `custom_report`).
+- For `desc_txt`, write a descriptive sentence which will give meaning to anyone reading it from the NBS UI.
 - For `runner` the value **MUST** be `python`.
 
 ### Replacing an Existing SAS Library With Python
 
-
-### Updating the Database
-
-There is one table that must be manually updated to include information about a given custom report.  The following query should be used as a template for this task:
-
-
-
-The important columns that should be updated are:
-
-- `library_name`
-- `desc_txt`
-
-
-
-### Placing the Custom Report File in the Docker Container
+## Placing the Custom Report File in the Docker Container
 
 All custom report files will need to be placed in the `/usr/report-execution/src/libraries/custom/` directory within the `report-execution` docker container.
-
-## Scratch
-
-Questions:
-- What is `column_select_id` used for in `Report_Library` and is it important to these custom libraries?
-
-`library.execute` called with:
-- `Transaction` as `trx`
-- `subset_query`
-- `sort_by`
-- `days_value`
-- `column_map`
-- `library_params`
-
-libraries must return `ReportResult` instance.
-
-layout:
-- intro
-- writing custom Python reports
-- adding them to NBS
-  - updating an existing SAS report
-  - creating a brand new Python report
