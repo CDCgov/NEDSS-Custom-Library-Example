@@ -60,7 +60,7 @@ def execute(
 - `ReportResult` is the data shape that is used to return the report's resulting data (via a `Table` instance, assigned to the `content` attribute) to either the NBS UI or the exported CSV
 
 
-## Adding Custom Library to NBS
+## Adding a Custom Library to NBS
 
 There are 2 possible scenarios you can have for adding a custom library to NBS 7:
 
@@ -141,7 +141,7 @@ Once the new Python library has been added to NBS by using the above steps, you 
 - Navigate to `System Management` > `Report Management`, click on `Manage Reports`.
 - Click on `Create`
 - Fill out the `Add report` configuration screen
-- You will find the new custom Python library in the `Report execution library` dropdown (**NOTE:** if it does not appear in the dropdown, be sure to clear out your browser's Local Storage as the values in the dropdown are cached there)
+- You will find the new custom Python library in the `Report execution library` dropdown (**NOTE: if it does not appear in the dropdown, be sure to clear out your browser's Local Storage as the values in the dropdown are cached there**)
 
   ![Add Report Configuration Library Dropdown](images/add_report_execution_library_dropdown.png)
 - Your configured report will look something like this:
