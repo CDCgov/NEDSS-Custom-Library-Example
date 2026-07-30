@@ -21,7 +21,7 @@ A report is the main entity which is used to run individual report libraries (pr
 
 ### Report Library
 
-Where the actual data lookup and handling logic of the report lives.  In NBS 7 the report libraries are Python files which adhere to a prescribed shape in order to be used in NBS via the `report-execution` app.
+Where the actual data lookup and handling logic of the report lives.  In NBS 7 the report libraries are Python files which adhere to a prescribed shape in order to be used in NBS via the Report Execution app.
 
 A report library can either be:
 
@@ -34,7 +34,7 @@ A single Python file that adheres to a prescribed shape (see example below) that
 
 ## Python Report Example
 
-Here is a simple example of a Python report which simply returns unmodified data from a given data source:
+Here is a simple example of a Python report which returns unmodified data queried from a given data source:
 
 ```Python
 from src.db_transaction import Transaction
@@ -57,7 +57,7 @@ def execute(
 - `subset_query` is the SQL query that is given to the libary by NBS to act as the main data source for the report
 - `Transaction` represents the database connection and has a method named `query` to execute SQL queries (results returned in a `Table` instance)
 - `Table` is the data format which contains both column names and data which is used to return the result to NBS
-- `ReportResult` is the data shape that is used to return the report's resulting data (via a `Table` instance, assigned to the `content` attribute) to either the UI or the exported CSV
+- `ReportResult` is the data shape that is used to return the report's resulting data (via a `Table` instance, assigned to the `content` attribute) to either the NBS UI or the exported CSV
 
 
 ## Adding Custom Library to NBS
@@ -152,6 +152,6 @@ Once the new Python library has been added to NBS by using the above steps, you 
 
 ### Accessing a Report That Was Updated From SAS to Python
 
-Once the new Python library has been added to NBS and the proper database table has been updated, the existing report that used to use SAS will still appear in the same spot in the `Reports` section of the NBS UI.
+Once the new Python library has been deployed to NBS and the proper database table has been updated as per the instracutions above, the existing report that used to use SAS will still appear in the same spot in the `Reports` section of the NBS UI.
 
 Run the report in the same way as you did before and it will use the Python library that you have updated it with.
