@@ -32,7 +32,7 @@ A report library can either be:
 
 A single Python file that adheres to a prescribed shape (see example below) that is called when a report is run from NBS via the Report Execution app.
 
-## Python Report Example
+## Example Python Library
 
 Here is a simple example of a Python library which returns unmodified data queried from a given data source:
 
