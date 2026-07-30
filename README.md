@@ -60,7 +60,7 @@ def execute(
 - `ReportResult` is the data shape that is used to return the report's resulting data (via a `Table` instance, assigned to the `content` attribute) to either the UI or the exported CSV
 
 
-## Adding Custom Report to NBS
+## Adding Custom Library to NBS
 
 There are 2 possible scenarios you can have for adding a report to NBS 7:
 
@@ -132,7 +132,7 @@ All custom report library files will need to be placed in the `/usr/report-execu
 
 Once the new library has been written, the database has been updated properly, and the library file has been deployed you're now ready to run the report from the NBS UI.
 
-If it is a brand new report library, you will need to create a new report.  If you have replaced an existing SAS library with the new Python library, the report should run as-is.
+If it is a brand new report library, you will need to create a new report in the NBS UI.  If you have replaced an existing SAS library with the new Python library, the report should run as-is from the NBS UI.
 
 ### Creating a Report With the New Python Library
 
@@ -152,6 +152,6 @@ Once the new Python library has been added to NBS by using the above steps, you 
 
 ### Accessing a Report That Was Updated From SAS to Python
 
-Once the new Python library has been added to NBS and the proper database table has been updated, the existing report that used to use SAS will still appear in the same spot in the `Reports` section of NBS.
+Once the new Python library has been added to NBS and the proper database table has been updated, the existing report that used to use SAS will still appear in the same spot in the `Reports` section of the NBS UI.
 
-You should be able to run them immediately without any further configuration.
+Run the report in the same way as you did before and it will use the Python library that you have updated it with.
