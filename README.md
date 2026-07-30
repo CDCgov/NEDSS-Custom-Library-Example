@@ -46,7 +46,7 @@ def execute(
     subset_query: str,
     **kwargs,
 ) -> ReportResult:
-    """Simple example of a Python report."""
+    """Simple example of a Python report library."""
 
     content: Table = trx.query(subset_query)
 
@@ -103,6 +103,54 @@ There is one table named `NBS_ODSE.dbo.Report_Library` that must be manually upd
 
 ### Replacing an Existing SAS Library With Python
 
-## Placing the Custom Report File in the Docker Container
+If you are replacing an existing SAS library with Python, then the SAS library should already be present in the `NBS_ODSE.dbo.Report_Library` table.  Use the following query as a template to update the existing library to use the new Python library instead:
 
-All custom report files will need to be placed in the `/usr/report-execution/src/libraries/custom/` directory within the `report-execution` docker container.
+```sql
+    USE [NBS_ODSE];
+
+    UPDATE [dbo].[Report_Library]
+    SET
+        library_name = 'example_library',  -- MUST be the Python library's filename without ".py"
+        runner = 'python',  -- MUST have the value 'python'
+        desc_txt = 'This is an example library meant for instruction.',  -- Short description of library
+        last_chg_time = CURRENT_TIMESTAMP,
+        last_chg_user_id = 99999999
+    WHERE
+        UPPER(library_name) = 'EXISTING_LIBRARY.SAS';  -- MUST be the exact  SAS library file name in ALL CAPS
+```
+
+- For `library_name`, the value **MUST** be the Python libary's filename without the `.py` extension (e.g. `custom_report.py` -> `custom_report`).
+- For `desc_txt`, write a descriptive sentence which will give meaning to anyone reading it from the NBS UI.
+- For `runner` the value **MUST** be `python`.
+- Make sure to match the existing `library_name` by putting the SAS library filename is ALL CAPS
+
+### Deploying the Custom Report Library File(s)
+
+All custom report library files will need to be placed in the `/usr/report-execution/src/libraries/custom/` directory within the `report-execution` deployed docker container.
+
+## Running the New Report Library
+
+Once the new library has been written, the database has been updated properly, and the library file has been deployed you're now ready to run the report from the NBS UI.
+
+If it is a brand new report library, you will need to create a new report.  If you have replaced an existing SAS library with the new Python library, the report should run as-is.
+
+### Creating a Report With the New Python Library
+
+Once the new Python library has been added to NBS by using the above steps, you will need to create a new Report in the NBS UI:
+
+- Navigate to `System Management` > `Report Management`, click on `Manage Reports`.
+- Click on `Create`
+- Fill out the `Add report` configuration screen
+- You will find the new custom Python library in the `Report execution library` dropdown (**NOTE:** if it does not appear in the dropdown, be sure to clear out your browser's Local Storage as the values in the dropdown are cached there)
+  ![Add Report Configuration Library Dropdown](images/add_report_execution_library_dropdown.png)
+- Your configured report will look something like this:
+  ![Add Report Configuration](images/add_report_configuration.png)
+- Click `Submit`
+- Navigate to `Reports` and your new report will appear in the group and section that you configured them for:
+  ![Reports List](images/reports_list.png)
+
+### Accessing a Report That Was Updated From SAS to Python
+
+Once the new Python library has been added to NBS and the proper database table has been updated, the existing report that used to use SAS will still appear in the same spot in the `Reports` section of NBS.
+
+You should be able to run them immediately without any further configuration.
