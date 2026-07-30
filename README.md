@@ -142,6 +142,7 @@ Once the new Python library has been added to NBS by using the above steps, you 
 - Click on `Create`
 - Fill out the `Add report` configuration screen
 - You will find the new custom Python library in the `Report execution library` dropdown (**NOTE:** if it does not appear in the dropdown, be sure to clear out your browser's Local Storage as the values in the dropdown are cached there)
+
   ![Add Report Configuration Library Dropdown](images/add_report_execution_library_dropdown.png)
 - Your configured report will look something like this:
   ![Add Report Configuration](images/add_report_configuration.png)
