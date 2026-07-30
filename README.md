@@ -124,13 +124,18 @@ WHERE
 - For `runner` the value **MUST** be `python`.
 - Make sure to match the existing `library_name` by putting the SAS library filename is ALL CAPS
 
-### Deploying Custom Report Libraries
+### Deploying Custom Python Libraries
 
-All custom report library files will need to be placed in the `/usr/report-execution/src/libraries/custom/` directory within the `report-execution` deployed docker container.
+All custom Python report library files will need to be placed in the `/usr/report-execution/src/libraries/custom/` directory within the `report-execution` deployed docker container in order for NBS to be able to use them.
 
 ## Running the New Report Library
 
-Once the new library has been written, the database has been updated properly, and the library file has been deployed you're now ready to run the report from the NBS UI.
+Now that you have:
+- Written the Python library
+- Updated the database to accept the new Python library
+- Deployed the Python library to the Report Execution app
+
+you're now ready to run the report from the NBS UI.
 
 If it is a brand new report library, you will need to create a new report in the NBS UI.  If you have replaced an existing SAS library with the new Python library, the report should run as-is from the NBS UI.
 
