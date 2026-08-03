@@ -69,7 +69,7 @@ There are 2 possible scenarios you can have for adding a custom library to NBS 7
 
 ### Adding a Brand New Python Library
 
-There is one table named `NBS_ODSE.dbo.Report_Library` that must be manually updated to include information about a given custom report library.  The following query should be used as a template for this task:
+There is a table named `NBS_ODSE.dbo.Report_Library` that must be manually updated to include information about a given custom report library.  The following query should be used as a template for this task:
 
 ```sql
 USE [NBS_ODSE];
