@@ -23,7 +23,7 @@ A report is the main entity which is used to run individual report libraries (pr
 
 Where the actual data lookup and handling logic of the report lives.  In NBS 7 the report libraries are Python files which adhere to a prescribed shape in order to be used in NBS via the Report Execution app.
 
-A report library can either be:
+A Report Library can either be:
 
 - builtin: pre-built report libraries that are maintained by NBS devs
 - custom: report libraries built by STLTs and used only within their NBS install
@@ -46,7 +46,7 @@ def execute(
     subset_query: str,
     **kwargs,
 ) -> ReportResult:
-    """Simple example of a Python report library."""
+    """Simple example of a Python Report Library."""
 
     content: Table = trx.query(subset_query)
 
@@ -69,7 +69,7 @@ There are 2 possible scenarios you can have for adding a custom library to NBS 7
 
 ### Adding a Brand New Python Library
 
-There is a table named `NBS_ODSE.dbo.Report_Library` that must be manually updated to include information about a given custom report library.  The following query should be used as a template for this task:
+There is a table named `NBS_ODSE.dbo.Report_Library` that must be manually updated to include information about a given custom Report Library.  The following query should be used as a template for this task:
 
 ```sql
 USE [NBS_ODSE];
@@ -86,10 +86,10 @@ INSERT INTO [dbo].[Report_Library] (
     last_chg_user_id
 ) VALUES (
     'example_library',  -- MUST be the Python library's filename without ".py"
-    'This is an example library meant for instruction.',  -- Short description of report library
+    'This is an example library meant for instruction.',  -- Short description of Report Library
     'python',  -- MUST have the value 'python'
-    'N',  -- MUST be either 'Y' or 'N', determines which columns are selected in the `subset_query` sent to the report library
-    'N',  -- MUST be set to 'N' as any custom report you're writing will not be a builtin report library
+    'N',  -- MUST be either 'Y' or 'N', determines which columns are selected in the `subset_query` sent to the Report Library
+    'N',  -- MUST be set to 'N' as any custom report you're writing will not be a builtin Report Library
     CURRENT_TIMESTAMP,
     99999999,
     CURRENT_TIMESTAMP,
@@ -100,8 +100,8 @@ INSERT INTO [dbo].[Report_Library] (
 - For `library_name`, the value **MUST** be the Python libary's filename without the `.py` extension (e.g. `example_library.py` -> `example_library`).
 - For `desc_txt`, write a descriptive sentence which will give meaning to anyone reading it from the NBS UI.
 - For `runner` the value **MUST** be `python`.
-- For `column_select_ind` the value **MUST** by either `Y` or `N`.  A value of `Y` will allow anyone running the report to set the columns that are in the `SELECT` statement that is used in the `subset_query` sent to the report library.
-- For `is_builtin_ind`, the value **MUST** be `N` as this is a custom report library, not a builtin report library.
+- For `column_select_ind` the value **MUST** by either `Y` or `N`.  A value of `Y` will allow anyone running the report to set the columns that are in the `SELECT` statement that is used in the `subset_query` sent to the Report Library.
+- For `is_builtin_ind`, the value **MUST** be `N` as this is a custom Report Library, not a builtin Report Library.
 
 ### Replacing an Existing SAS Library With Python
 
@@ -128,7 +128,7 @@ WHERE
 
 ### Deploying Custom Python Libraries
 
-All custom Python report library files will need to be placed in the `/usr/report-execution/src/libraries/custom/` directory within the `report-execution` deployed docker container in order for NBS to be able to use them.
+All custom Python Report Library files will need to be placed in the `/usr/report-execution/src/libraries/custom/` directory within the `report-execution` deployed docker container in order for NBS to be able to use them.
 
 ## Running the New Report Library
 
@@ -139,7 +139,7 @@ Now that you have:
 
 you're now ready to run the report from the NBS UI.
 
-If it is a brand new report library, you will need to create a new report in the NBS UI.  If you have replaced an existing SAS library with the new Python library, the report should run as-is from the NBS UI.
+If it is a brand new Report Library, you will need to create a new report in the NBS UI.  If you have replaced an existing SAS library with the new Python library, the report should run as-is from the NBS UI.
 
 ### Creating a Report With the New Python Library
 
