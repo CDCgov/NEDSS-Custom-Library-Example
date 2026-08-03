@@ -54,7 +54,7 @@ def execute(
 ```
 
 - `execute` is the entrypoint for all Python libraries and is how the Report Execution app calls each Python library
-- `subset_query` is the SQL query that is given to the libary by NBS to act as the main data source for the report
+- `subset_query` is the SQL query that is given to the libary by NBS to act as the main data source for the report (**NOTE:** all column selections, filters, and security permissions are already baked into the query that is passed in here)
 - `Transaction` represents the database connection and has a method named `query` to execute SQL queries (results returned in a `Table` instance)
 - `Table` is the data format which contains both column names and data which is used to return the result to NBS
 - `ReportResult` is the data shape that is used to return the report's resulting data (via a `Table` instance, assigned to the `content` attribute) to either the NBS UI or the exported CSV
