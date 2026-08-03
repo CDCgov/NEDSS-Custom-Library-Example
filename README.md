@@ -59,6 +59,17 @@ def execute(
 - `Table` is the data format which contains both column names and data which is used to return the result to NBS
 - `ReportResult` is the data shape that is used to return the report's resulting data (via a `Table` instance, assigned to the `content` attribute) to either the NBS UI or the exported CSV
 
+A note on the `**kwargs` parameter in the above example.  There are several additional parameters that are passed in by the Report Execution app when calling the `execute` method on a given library.  These are:
+
+- `trx` - already included in example
+- `subset_query` - already included in example
+- `sort_by` - when running a report from the NBS UI you may select a column to sort by and this will be passed in as a valid SQL string for use in an `ORDER BY` statement.  For instance the choice shown in the following image will be passed in the `sort_by` parameter with the value `[Date Case Closed] DESC`:
+  ![Report Data Sorting](images/report_data_sorting.png)
+- `days_value` - this is a builtin specific value for the `Duplicate Investigations Time Frame` report filter.  If you are converting an existing SAS report which uses this specific report filter you may access it through the `days_value` function parameter.
+- `column_map` - when specific columns are selected in the NBS run report UI, this parameter is built with each column's `column name` (its actual SQL column name) and `column title` (the more human-friendly string describing the column) mapped to one another in a list.  For example if you selected the columns in the UI shown in the following picture:
+  ![Column Select](images/column_select.png)
+   the `column_map` value would then be `[['ADI_900_STATUS', 'ADI_900_STATUS'], ['HIV_AV_THERAPY_EVER_IND', 'Anti-Viral Therapy Ever']]`
+- `library_params` - explained in the "Advanced Topics" section of this document
 
 ## Adding a Custom Library to NBS
 
