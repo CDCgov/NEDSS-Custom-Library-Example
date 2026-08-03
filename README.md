@@ -86,10 +86,10 @@ INSERT INTO [dbo].[Report_Library] (
     last_chg_user_id
 ) VALUES (
     'example_library',  -- MUST be the Python library's filename without ".py"
-    'This is an example library meant for instruction.',  -- Short description of library
+    'This is an example library meant for instruction.',  -- Short description of report library
     'python',  -- MUST have the value 'python'
-    'N',
-    'N',
+    'N',  -- MUST be either 'Y' or 'N', determines which columns are selected in the `subset_query` sent to the report library
+    'N',  -- MUST be set to 'N' as any custom report you're writing will not be a builtin report library
     CURRENT_TIMESTAMP,
     99999999,
     CURRENT_TIMESTAMP,
@@ -100,6 +100,8 @@ INSERT INTO [dbo].[Report_Library] (
 - For `library_name`, the value **MUST** be the Python libary's filename without the `.py` extension (e.g. `example_library.py` -> `example_library`).
 - For `desc_txt`, write a descriptive sentence which will give meaning to anyone reading it from the NBS UI.
 - For `runner` the value **MUST** be `python`.
+- For `column_select_ind` the value **MUST** by either `Y` or `N`.  A value of `Y` will allow anyone running the report to set the columns that are in the `SELECT` statement that is used in the `subset_query` sent to the report library.
+- For `is_builtin_ind`, the value **MUST** be `N` as this is a custom report library, not a builtin report library.
 
 ### Replacing an Existing SAS Library With Python
 
