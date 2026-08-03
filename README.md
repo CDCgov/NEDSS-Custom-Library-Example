@@ -162,3 +162,87 @@ Once the new Python library has been added to NBS by using the above steps, you 
 Once the new Python library has been deployed to NBS and the proper database table has been updated as per the instracutions above, the existing report that used to use SAS will still appear in the same spot in the `Reports` section of the NBS UI.
 
 Run the report in the same way as you did before and it will use the Python library that you have updated it with.
+
+## Advanced Topics
+
+### Library Params
+
+Let's say that you write a custom Python Report Library file and there are 2 or more distinct scenarios that you would like this Report Library to handle.  For example let's say that you have a Report Library that can handle both calculations for STD data and HIV data separately.  Ideally you would be able to set up a Report in NBS that would allow a single Report Library to be run separately for STD and HIV.
+
+This is where `library_params` comes in.  It is a separate column in the `NBS_ODSE.dbo.Report_Library` table filled with one JSON object that will be sent in as a Python dictionary into the Report Library.
+
+Using the above example you could set the `library_params` value for one row of the `Report_Library` table to be:
+
+`'{"report_variant": "STD"}'`
+
+and the other to be:
+
+`'{"report_variant": "HIV"}'`
+
+A single Python Report Library (denoted in the `library_name` column) can appear in more than one row in the `NBS_ODSE.dbo.Report_Library` table, so you can have as many variants as you require.  For our example here are some partial SQL statements that would be used to set up the 2 variants in the database:
+
+```sql
+USE [NBS_ODSE];
+
+-- STD variant
+INSERT INTO [dbo].[Report_Library] (
+    library_name,
+    desc_txt,
+    library_params,
+    -- ... incomplete for brevity
+) VALUES (
+    'lp_example',  -- MUST be the Python library's filename without ".py"
+    'lp_example with STD variant', -- be sure this is descriptive to what is present in `library_params`!
+    '{"report_variant": "STD"}' -- MUST be valid JSON
+    -- ... incomplete for brevity
+);
+
+-- HIV variant
+INSERT INTO [dbo].[Report_Library] (
+    library_name,
+    desc_txt,
+    library_params,
+    -- ... incomplete for brevity
+) VALUES (
+    'lp_example',  -- MUST be the Python library's filename without ".py"
+    'lp_example with HIV variant', -- be sure this is descriptive to what is present in `library_params`!
+    '{"report_variant": "HIV"}' -- MUST be valid JSON
+    -- ... incomplete for brevity
+);
+
+```
+
+Once they are added to the database you will be able to select each in the `Report execution library` dropdown in the `Add report` screen:
+
+![library params example dropdown](images/library_params_example_dropdown.png)
+
+The library runner in the **Report Execution** app is already set up to pass in any value it finds in the `library_params` column (converted from a JSON string to a Python dictionary at runtime) as a paramenter named `library_params` to the `execute` method.
+
+You could set up your Report Library to be something like:
+
+```Python
+from src.db_transaction import Transaction
+from src.models import ReportResult, Table
+
+
+def execute(
+    trx: Transaction,
+    subset_query: str,
+    library_params: dict,
+    **kwargs,
+) -> ReportResult:
+    """An example of using `library_params` in your Report Library."""
+
+    content: Table = trx.query(subset_query)
+
+    report_variant: str = library_params.get('report_variant')
+
+    if report_variant == 'STD':
+        # handle STD logic
+    elif report_variant == 'HIV':
+        # handle HIV logic
+
+    # ...
+```
+
+As you can see in the body of the Report Library you can now branch off your logic based on what is present in the `library_params` dict.
