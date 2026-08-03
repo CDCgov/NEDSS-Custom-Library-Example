@@ -2,7 +2,7 @@
 
 In NBS 6 SAS was used to allow STLTs to write custom report libraries.  In NBS 7 SAS has been phased out in favor of running report libraries using Python.  These Python libraries will be able to query existing databases and return results for viewing in the NBS 7 UI or to be exported to CSV files.
 
-These new Python libraries will be executed by the **Report Execution** app which can be found in the `NEDSS-Modernization` repository:
+These new Python libraries will be executed by the Report Execution app which can be found in the `NEDSS-Modernization` repository:
 
 [NEDSS-Modernization](https://github.com/CDCgov/NEDSS-Modernization)
 
@@ -128,7 +128,7 @@ WHERE
 
 ### Deploying Custom Python Libraries
 
-All custom Python Report Library files will need to be placed in the `/usr/report-execution/src/libraries/custom/` directory within the `report-execution` deployed docker container in order for NBS to be able to use them.
+All custom Python Report Library files will need to be mounted in the `/usr/report-execution/src/libraries/custom/` directory within the `report-execution` deployed docker container in order for NBS to be able to use them.
 
 ## Running the New Report Library
 
@@ -216,7 +216,7 @@ Once they are added to the database you will be able to select each in the `Repo
 
 ![library params example dropdown](images/library_params_example_dropdown.png)
 
-The library runner in the **Report Execution** app is already set up to pass in any value it finds in the `library_params` column (converted from a JSON string to a Python dictionary at runtime) as a paramenter named `library_params` to the `execute` method.
+The library runner in the Report Execution app is already set up to pass in any value it finds in the `library_params` column (converted from a JSON string to a Python dictionary at runtime) as a paramenter named `library_params` to the `execute` method.
 
 You could set up your Report Library to be something like:
 
