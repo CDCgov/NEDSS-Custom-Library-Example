@@ -214,7 +214,7 @@ INSERT INTO [dbo].[Report_Library] (
 
 Once they are added to the database you will be able to select each in the `Report execution library` dropdown in the `Add report` screen:
 
-![library params example dropdown](images/library_params_example_dropdown.png)
+![Library Params Example Dropdown](images/library_params_example_dropdown.png)
 
 The library runner in the Report Execution app is already set up to pass in any value it finds in the `library_params` column (converted from a JSON string to a Python dictionary at runtime) as a paramenter named `library_params` to the `execute` method.
 
