@@ -137,6 +137,8 @@ WHERE
 - For `runner` the value **MUST** be `python`.
 - Make sure to match the existing `library_name` by putting the SAS library filename is ALL CAPS
 
+Examples of completed SAS to Python translation queries are available in the NEDSS-Modernization repo [here](https://github.com/CDCgov/NEDSS-Modernization/tree/main/apps/modernization-api/src/main/resources/db/report/execution/libraries).
+
 ### Deploying Custom Python Libraries
 
 All custom Python Report Library files will need to be mounted in the `/usr/report-execution/src/libraries/custom/` directory within the `report-execution` deployed docker container in order for NBS to be able to use them.
