@@ -1,5 +1,26 @@
 # Custom Python NBS Report Libraries
 
+## Table of Contents
+
+- [Intro](#intro)
+- [Concepts](#concepts)
+  - [Report](#report)
+  - [Report Library](#report-library)
+  - [Python Library](#python-library)
+- [Example Python Library](#example-python-library)
+- [Adding a Custom Library to NBS](#adding-a-custom-library-to-nbs)
+  - [Adding a Brand New Python Library](#adding-a-brand-new-python-library)
+  - [Replacing an Existing SAS Library With Python](#replacing-an-existing-sas-library-with-python)
+  - [Deploying Custom Python Libraries](#deploying-custom-python-libraries)
+    - [Using a ConfigMap](#using-a-configmap)
+- [Running the New Report Library](#running-the-new-report-library)
+  - [Creating a Report With the New Python Library](#creating-a-report-with-the-new-python-library)
+  - [Accessing a Report That Was Updated From SAS to Python](#accessing-a-report-that-was-updated-from-sas-to-python)
+- [Advanced Topics](#advanced-topics)
+  - [Library Params](#library-params)
+
+## Intro
+
 In NBS 6 SAS was used to allow STLTs to write custom report libraries.  In NBS 7 SAS has been phased out in favor of running report libraries using Python.  These Python libraries will be able to query existing databases and return results for viewing in the NBS 7 UI or to be exported to CSV files.
 
 These new Python libraries will be executed by the Report Execution app which can be found in the `NEDSS-Modernization` repository:
