@@ -141,7 +141,73 @@ Examples of completed SAS to Python translation queries are available in the NED
 
 ### Deploying Custom Python Libraries
 
-All custom Python Report Library files will need to be mounted in the `/usr/report-execution/src/libraries/custom/` directory within the `report-execution` deployed docker container in order for NBS to be able to use them.
+In order for custom Python libraries to work they will need to be present in the deployment of `report-execution`.  Specifically all custom reports MUST be placed in the directory of the `report-execution` pod:
+
+```
+/usr/report-execution/src/libraries/custom/
+```
+
+This means that as part of the helm/k8s installation of `report-execution` some form of storage will need to be in place in order to mount the files in that location.
+
+#### Using a ConfigMap
+
+One way to do this is through the use of a [k8s ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/).  The idea here is that you would use the `ConfigMap` to store individual Python library files as binary data (in the form of base64 strings).
+
+In this example I used the [NEDSS-Helm](https://github.com/CDCgov/NEDSS-Helm/) repository, adding configuration to the `modernization-api` Helm chart.
+
+Here is an example of a `ConfigMap` which takes in all Python files from a specific directory and stores them as binary data:
+
+```yaml
+# charts/modernization-api/templates/configmap-report-execution.yaml
+
+{{- if eq (toString .Values.reportExecution.enabled) "true" }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "modernization-api.reportExecution.fullname" . }}-configmap
+binaryData:
+  {{- (.Files.Glob "custom-libs/*.py").AsSecrets | nindent 2 }}
+{{- end }}
+```
+
+You can see in the above Helm YAML that we're pulling all Python files from the `charts/modernization-api/custom-libs` directory (you can use whichever directory is convenient for you), meaning you would stage whichever Python libraries you wished to install in that directory and Helm would build the k8s `ConfigMap` during the Helm install/upgrade process.
+
+The `ConfigMap` itself will then be added to the `report-execution` deployment Helm YAML (note this is a partial YAML file showing only the parts related to the `ConfigMap`):
+
+```yaml
+# charts/modernization-api/templates/deployment-report-execution.yaml
+
+spec:
+  # ...
+  template:
+    # ...
+    spec:
+      # ...
+      containers:
+        - name: report-execution
+          # ...
+          volumeMounts:
+          - mountPath: {{ .Values.reportExecution.customLibPath }}
+            name: {{ include "modernization-api.reportExecution.fullname" . }}-configmap
+            readOnly: true
+      volumes:
+        - name: {{ include "modernization-api.reportExecution.fullname" . }}-configmap
+            configMap:
+              name: {{ include "modernization-api.reportExecution.fullname" . }}-configmap
+              defaultMode: 0777
+      # ...
+```
+
+The value of `mountPath` within the `volumeMounts` section is defined in the Helm values YAML file for the `modernization-api` chart (note this is a partial YAML file showing only the parts related to the `customLibPath`):
+
+```yaml
+# charts/modernization-api/values.yaml
+
+# ...
+reportExecution:
+  # ...
+  customLibPath: /usr/report-execution/src/libraries/custom/
+```
 
 ## Running the New Report Library
 
