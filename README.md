@@ -75,7 +75,7 @@ def execute(
 ```
 
 - `execute` is the entrypoint for all Python libraries and is how the Report Execution app calls each Python library
-- `subset_query` is the SQL query that is given to the libary by NBS to act as the main data source for the report (**NOTE:** all column selections, filters, and security permissions are already baked into the query that is passed in here)
+- `subset_query` is the SQL query that is given to the library by NBS to act as the main data source for the report (**NOTE:** all column selections, filters, and security permissions are already baked into the query that is passed in here)
 - `Transaction` represents the database connection and has a method named `query` to execute SQL queries (results returned in a `Table` instance)
 - `Table` is the data format which contains both column names and data which is used to return the result to NBS
 - `ReportResult` is the data shape that is used to return the report's resulting data (via a `Table` instance, assigned to the `content` attribute) to either the NBS UI or the exported CSV
@@ -129,7 +129,7 @@ INSERT INTO [dbo].[Report_Library] (
 );
 ```
 
-- For `library_name`, the value **MUST** be the Python libary's filename without the `.py` extension (e.g. `example_library.py` -> `example_library`).
+- For `library_name`, the value **MUST** be the Python library's filename without the `.py` extension (e.g. `example_library.py` -> `example_library`).
 - For `desc_txt`, write a descriptive sentence which will give meaning to anyone reading it from the NBS UI.
 - For `runner` the value **MUST** be `python`.
 - For `column_select_ind` the value **MUST** by either `Y` or `N`.  A value of `Y` will allow anyone running the report to set the columns that are in the `SELECT` statement that is used in the `subset_query` sent to the Report Library.
@@ -153,7 +153,7 @@ WHERE
     UPPER(library_name) = 'EXISTING_LIBRARY.SAS';  -- MUST be the exact  SAS library file name in ALL CAPS
 ```
 
-- For `library_name`, the value **MUST** be the Python libary's filename without the `.py` extension (e.g. `example_library.py` -> `example_library`).
+- For `library_name`, the value **MUST** be the Python library's filename without the `.py` extension (e.g. `example_library.py` -> `example_library`).
 - For `desc_txt`, write a descriptive sentence which will give meaning to anyone reading it from the NBS UI.
 - For `runner` the value **MUST** be `python`.
 - Make sure to match the existing `library_name` by putting the SAS library filename is ALL CAPS
@@ -259,7 +259,7 @@ Once the new Python library has been added to NBS by using the above steps, you 
 
 ### Accessing a Report That Was Updated From SAS to Python
 
-Once the new Python library has been deployed to NBS and the proper database table has been updated as per the instracutions above, the existing report that used to use SAS will still appear in the same spot in the `Reports` section of the NBS UI.
+Once the new Python library has been deployed to NBS and the proper database table has been updated as per the instructions above, the existing report that used to use SAS will still appear in the same spot in the `Reports` section of the NBS UI.
 
 Run the report in the same way as you did before and it will use the Python library that you have updated it with.
 
@@ -316,7 +316,7 @@ Once they are added to the database you will be able to select each in the `Repo
 
 ![Library Params Example Dropdown](images/library_params_example_dropdown.png)
 
-The library runner in the Report Execution app is already set up to pass in any value it finds in the `library_params` column (converted from a JSON string to a Python dictionary at runtime) as a paramenter named `library_params` to the `execute` method.
+The library runner in the Report Execution app is already set up to pass in any value it finds in the `library_params` column (converted from a JSON string to a Python dictionary at runtime) as a parameter named `library_params` to the `execute` method.
 
 You could set up your Report Library to be something like:
 
