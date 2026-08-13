@@ -165,7 +165,7 @@ Examples of completed SAS to Python translation queries are available in the NED
 
 ### Deploying Custom Python Libraries
 
-In order for custom Python libraries to work they will need to be present in the deployment of `report-execution`.  Specifically all custom reports MUST be placed in the directory of the `report-execution` pod:
+In order for custom Python libraries to work they will need to be present in the deployment of `report-execution`.  Specifically all custom reports MUST be placed in the directory of this `report-execution` pod:
 
 ```
 /usr/report-execution/src/libraries/custom/
