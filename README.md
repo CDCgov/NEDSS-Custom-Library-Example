@@ -134,12 +134,6 @@ INSERT INTO [dbo].[Report_Library] (
 );
 ```
 
-- For `library_name`, the value **MUST** be the Python library's filename without the `.py` extension (e.g. `example_library.py` -> `example_library`).
-- For `desc_txt`, write a descriptive sentence which will give meaning to anyone reading it from the NBS UI.
-- For `runner` the value **MUST** be `python`.
-- For `column_select_ind` the value **MUST** be either `Y` or `N`.  A value of `Y` will require anyone running the report to set the columns that are in the `SELECT` statement that is used in the `subset_query` sent to the Report Library.
-- For `is_builtin_ind`, the value **MUST** be `N` as this is a custom Report Library, not a builtin Report Library.
-
 ### Replacing an Existing SAS Library With Python
 
 If you are replacing an existing SAS library with Python, then the SAS library should already be present in the `NBS_ODSE.dbo.Report_Library` table.  Use the following query as a template to update the existing library to use the new Python library instead:
@@ -157,11 +151,6 @@ SET
 WHERE
     UPPER(library_name) = 'EXISTING_LIBRARY.SAS';  -- MUST be the exact  SAS library file name in ALL CAPS
 ```
-
-- For `library_name`, the value **MUST** be the Python library's filename without the `.py` extension (e.g. `example_library.py` -> `example_library`).
-- For `desc_txt`, write a descriptive sentence which will give meaning to anyone reading it from the NBS UI.
-- For `runner` the value **MUST** be `python`.
-- Make sure to match the existing `library_name` by putting the SAS library filename in ALL CAPS
 
 Examples of completed SAS to Python translation queries are available in the NEDSS-Modernization repo [here](https://github.com/CDCgov/NEDSS-Modernization/tree/main/apps/modernization-api/src/main/resources/db/report/execution/libraries).
 
