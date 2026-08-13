@@ -91,6 +91,9 @@ A note on the `**kwargs` parameter in the above example.  There are several addi
   ![Column Select](images/column_select.png)
    the `column_map` value would then be `[['ADI_900_STATUS', 'ADI_900_STATUS'], ['HIV_AV_THERAPY_EVER_IND', 'Anti-Viral Therapy Ever']]`
 - `library_params` - explained in the "Advanced Topics" section of this document
+ 
+
+**Note**: _always_ include the `**kwargs` parameter in your custom library even if you are using all currently available named args. It is possible that future releases could add new arguments passed to the execute function and this ensures your library will continue to work as expected.
 
 ## Adding a Custom Library to NBS
 
