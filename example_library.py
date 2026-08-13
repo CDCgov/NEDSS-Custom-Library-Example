@@ -13,7 +13,7 @@ def execute(
 
     query = f"""
     WITH subset AS {subset_query}
-    SELECT {', '.join([f"{col[0]} AS {col[1]}" for col in column_map])}, COUNT(*) AS record_count
+    SELECT {', '.join([f"[{col[1]}]" for col in column_map])}, COUNT(*) AS record_count
     FROM subset
     GROUP BY {', '.join([col[0] for col in column_map])}
     """
