@@ -2,22 +2,24 @@
 
 ## Table of Contents
 
-- [Intro](#intro)
-- [Concepts](#concepts)
-  - [Report](#report)
-  - [Report Library](#report-library)
-  - [Python Library](#python-library)
-- [Example Python Library](#example-python-library)
-- [Adding a Custom Library to NBS](#adding-a-custom-library-to-nbs)
-  - [Adding a Brand New Python Library](#adding-a-brand-new-python-library)
-  - [Replacing an Existing SAS Library With Python](#replacing-an-existing-sas-library-with-python)
-  - [Deploying Custom Python Libraries](#deploying-custom-python-libraries)
-    - [Using a ConfigMap](#using-a-configmap)
-- [Running the New Report Library](#running-the-new-report-library)
-  - [Creating a Report With the New Python Library](#creating-a-report-with-the-new-python-library)
-  - [Accessing a Report That Was Updated From SAS to Python](#accessing-a-report-that-was-updated-from-sas-to-python)
-- [Advanced Topics](#advanced-topics)
-  - [Library Params](#library-params)
+- [Custom Python NBS Report Libraries](#custom-python-nbs-report-libraries)
+  - [Table of Contents](#table-of-contents)
+  - [Intro](#intro)
+  - [Concepts](#concepts)
+    - [Report](#report)
+    - [Report Library](#report-library)
+    - [Python Library](#python-library)
+  - [Example Python Library](#example-python-library)
+  - [Adding a Custom Library to NBS](#adding-a-custom-library-to-nbs)
+    - [Adding a Brand New Python Library](#adding-a-brand-new-python-library)
+    - [Replacing an Existing SAS Library With Python](#replacing-an-existing-sas-library-with-python)
+    - [Deploying Custom Python Libraries](#deploying-custom-python-libraries)
+      - [Using a ConfigMap](#using-a-configmap)
+  - [Running the New Report Library](#running-the-new-report-library)
+    - [Creating a Report With the New Python Library](#creating-a-report-with-the-new-python-library)
+    - [Accessing a Report That Was Updated From SAS to Python](#accessing-a-report-that-was-updated-from-sas-to-python)
+  - [Advanced Topics](#advanced-topics)
+    - [Library Params](#library-params)
 
 ## Intro
 
@@ -177,7 +179,7 @@ This means that as part of the helm/k8s installation of `report-execution` some 
 
 One way to do this is through the use of a [k8s ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/).  The idea here is that you would use the `ConfigMap` to store individual Python library files as binary data (in the form of base64 strings).
 
-In this example I used the [NEDSS-Helm](https://github.com/CDCgov/NEDSS-Helm/) repository, adding configuration to the `modernization-api` Helm chart.
+In this example the [NEDSS-Helm](https://github.com/CDCgov/NEDSS-Helm/) repository is used and configuration is added to the `modernization-api` Helm chart.
 
 Here is an example of a `ConfigMap` which takes in all Python files from a specific directory and stores them as binary data:
 
@@ -194,7 +196,7 @@ binaryData:
 {{- end }}
 ```
 
-You can see in the above Helm YAML that we're pulling all Python files from the `charts/modernization-api/custom-libs` directory (you can use whichever directory is convenient for you), meaning you would stage whichever Python libraries you wished to install in that directory and Helm would build the k8s `ConfigMap` during the Helm install/upgrade process.
+You can see in the above Helm YAML that all Python files from the `charts/modernization-api/custom-libs` directory are retrieved (you can use whichever directory is convenient for you), meaning you would stage whichever Python libraries you wished to install in that directory and Helm would build the k8s `ConfigMap` during the Helm install/upgrade process.
 
 The `ConfigMap` itself will then be added to the `report-execution` deployment Helm YAML (note this is a partial YAML file showing only the parts related to the `ConfigMap`):
 
