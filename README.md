@@ -31,7 +31,7 @@ Within the repository the Report Execution service is found at `app/report-execu
 
 ```
 apps/report-execution/src/libraries        # builtin libraries
-apps/report-execution/src/libraries/custom # STLT-made custom libraries
+apps/report-execution/src/libraries/custom # Folder where STLT-made custom libraries are mounted
 ```
 
 ## Concepts
