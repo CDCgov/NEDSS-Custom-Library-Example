@@ -27,7 +27,7 @@ These new Python libraries will be executed by the Report Execution service whic
 
 [NEDSS-Modernization](https://github.com/CDCgov/NEDSS-Modernization)
 
-Within the repository the Report Execution app is found at `app/report-execution` and the Python library files themselves are located at:
+Within the repository the Report Execution service is found at `app/report-execution` and the Python library files themselves are located at:
 
 ```
 apps/report-execution/src/libraries        # builtin libraries
