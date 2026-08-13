@@ -8,8 +8,8 @@ def execute(
     column_map: list[list[str]],
     **kwargs,
 ) -> ReportResult:
-    """Simple example of a Python report library that groups on the columns
-    specified in the column_map and counts the number of records for each group."""
+    """Simple example of a Python report library that groups on the selected columns
+    and counts the number of records for each group."""
 
     query = f"""
     WITH subset AS {subset_query}
