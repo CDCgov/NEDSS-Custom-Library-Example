@@ -237,7 +237,7 @@ reportExecution:
 
 Now that you have:
 - Written the Python library
-- Updated the database to accept the new Python library
+- Updated the database to register the new Python library
 - Deployed the Python library to the Report Execution app
 
 you're now ready to run the report from the NBS UI.
