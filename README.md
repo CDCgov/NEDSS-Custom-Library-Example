@@ -135,7 +135,7 @@ INSERT INTO [dbo].[Report_Library] (
 - For `library_name`, the value **MUST** be the Python library's filename without the `.py` extension (e.g. `example_library.py` -> `example_library`).
 - For `desc_txt`, write a descriptive sentence which will give meaning to anyone reading it from the NBS UI.
 - For `runner` the value **MUST** be `python`.
-- For `column_select_ind` the value **MUST** by either `Y` or `N`.  A value of `Y` will allow anyone running the report to set the columns that are in the `SELECT` statement that is used in the `subset_query` sent to the Report Library.
+- For `column_select_ind` the value **MUST** by either `Y` or `N`.  A value of `Y` will require anyone running the report to set the columns that are in the `SELECT` statement that is used in the `subset_query` sent to the Report Library.
 - For `is_builtin_ind`, the value **MUST** be `N` as this is a custom Report Library, not a builtin Report Library.
 
 ### Replacing an Existing SAS Library With Python
