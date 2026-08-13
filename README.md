@@ -128,9 +128,9 @@ INSERT INTO [dbo].[Report_Library] (
     'N',  -- MUST be either 'Y' or 'N'.  'Y' means columns are selectable in the UI and the selected columns will be included in the `SELECT` statement in the base query. 'N' means users do not select columns in the UI and `SELECT *` is used in the base query instead.
     'N',  -- MUST be set to 'N' as any custom report you're writing will not be a builtin Report Library
     CURRENT_TIMESTAMP,
-    99999999,
+    99999999,  -- semi-standard system update value
     CURRENT_TIMESTAMP,
-    99999999
+    99999999  -- semi-standard system update value
 );
 ```
 
@@ -153,7 +153,7 @@ SET
     runner = 'python',  -- MUST have the value 'python'
     desc_txt = 'This is an example library meant for instruction.',  -- Short description of library
     last_chg_time = CURRENT_TIMESTAMP,
-    last_chg_user_id = 99999999
+    last_chg_user_id = 99999999  -- semi-standard system update value
 WHERE
     UPPER(library_name) = 'EXISTING_LIBRARY.SAS';  -- MUST be the exact  SAS library file name in ALL CAPS
 ```
