@@ -123,7 +123,7 @@ INSERT INTO [dbo].[Report_Library] (
     'example_library',  -- MUST be the Python library's filename without ".py"
     'This is an example library meant for instruction.',  -- Short description of Report Library
     'python',  -- MUST have the value 'python'
-    'N',  -- MUST be either 'Y' or 'N', determines which columns are selected in the `subset_query` sent to the Report Library
+    'N',  -- MUST be either 'Y' or 'N', determines whether columns are selectable in the UI or if users do not select columns in the base query and `SELECT *` is used instead
     'N',  -- MUST be set to 'N' as any custom report you're writing will not be a builtin Report Library
     CURRENT_TIMESTAMP,
     99999999,
