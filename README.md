@@ -2,24 +2,22 @@
 
 ## Table of Contents
 
-- [Custom Python NBS Report Libraries](#custom-python-nbs-report-libraries)
-  - [Table of Contents](#table-of-contents)
-  - [Intro](#intro)
-  - [Process Overview](#process-overview)
-  - [Concepts](#concepts)
-  - [Writing a Python Library](#writing-a-python-library)
-    - [Function Parameters For `execute`](#function-parameters-for-execute)
-    - [Notable Types Involved](#notable-types-involved)
-  - [Adding a Custom Library to NBS](#adding-a-custom-library-to-nbs)
-    - [Adding a Brand New Python Library](#adding-a-brand-new-python-library)
-    - [Replacing an Existing SAS Library With Python](#replacing-an-existing-sas-library-with-python)
-    - [Deploying Custom Python Libraries](#deploying-custom-python-libraries)
-      - [Using a ConfigMap](#using-a-configmap)
-  - [Running the New Report Library](#running-the-new-report-library)
-    - [Creating a Report With the New Python Library](#creating-a-report-with-the-new-python-library)
-    - [Accessing a Report That Was Updated From SAS to Python](#accessing-a-report-that-was-updated-from-sas-to-python)
-  - [Advanced Topics](#advanced-topics)
-    - [Library Params](#library-params)
+- [Intro](#intro)
+- [Process Overview](#process-overview)
+- [Concepts](#concepts)
+- [Writing a Python Library](#writing-a-python-library)
+  - [Function Parameters For `execute`](#function-parameters-for-execute)
+  - [Notable Types Involved](#notable-types-involved)
+- [Adding a Custom Library to NBS](#adding-a-custom-library-to-nbs)
+  - [Adding a Brand New Python Library](#adding-a-brand-new-python-library)
+  - [Replacing an Existing SAS Library With Python](#replacing-an-existing-sas-library-with-python)
+  - [Deploying Custom Python Libraries](#deploying-custom-python-libraries)
+    - [Using a ConfigMap](#using-a-configmap)
+- [Running the New Report Library](#running-the-new-report-library)
+  - [Creating a Report With the New Python Library](#creating-a-report-with-the-new-python-library)
+  - [Accessing a Report That Was Updated From SAS to Python](#accessing-a-report-that-was-updated-from-sas-to-python)
+- [Advanced Topics](#advanced-topics)
+  - [Library Params](#library-params)
 
 ## Intro
 
@@ -29,7 +27,7 @@ These new Python libraries will be executed by the Report Execution service whic
 
 [NEDSS-Modernization](https://github.com/CDCgov/NEDSS-Modernization)
 
-Within the repository the Report Execution service is found at `app/report-execution` and the Python library files themselves are located at:
+Within the repository the Report Execution service is found at `apps/report-execution` and the Python library files themselves are located at:
 
 ```
 apps/report-execution/src/libraries        # builtin libraries
@@ -38,7 +36,7 @@ apps/report-execution/src/libraries/custom # Folder where STLT-made custom libra
 
 ## Process Overview
 
-The general flow of writing custom NBS 7 Python report lirbraries and getting them installed goes like:
+The general flow of writing custom NBS 7 Python report libraries and getting them installed goes like:
 
 1. Write a Python library file following the contract outlined in the example
 2. Register or update the Python library file in the `NBS_ODSE.dbo.Report_Library` table
@@ -50,7 +48,7 @@ Details will be given below about each of these steps.
 ## Concepts
 
 - **Report**: A report is the main entity which is used to run individual report libraries (previously written in SAS, now written in Python) using a configured data source in NBS.
-- **Report Library**: Where the actual data lookup and handling logic of the report lives.  In NBS 7 the report libraries are Python files which adhere to a prescribed shape in order to be used in NBS via the Report Execution service.
+- **Report Library**: The file where the actual data lookup and handling logic of the report lives.  In NBS 7 the report libraries are Python files which adhere to a prescribed shape in order to be used in NBS via the Report Execution service.
 - **Python Library File**: A single Python file that adheres to a prescribed contract (see example below) that is called when a report is run from NBS via the Report Execution service.  This is what gets executed by the Report Execution service and what yields the report's data.
 - `Report_Library` **Database Table**: A table within the `NBS_ODSE` database that defines the individual report library files that can be used by reports.
 
@@ -127,7 +125,7 @@ INSERT INTO [dbo].[Report_Library] (
     'example_library',  -- MUST be the Python library's filename without ".py"
     'This is an example library meant for instruction.',  -- Short description of Report Library
     'python',  -- MUST have the value 'python'
-    'N',  -- MUST be either 'Y' or 'N', determines whether columns are selectable in the UI or if users do not select columns in the base query and `SELECT *` is used instead
+    'N',  -- MUST be either 'Y' or 'N'.  'Y' means columns are selectable in the UI and the selected columns will be included in the `SELECT` statement in the base query. 'N' means users do not select columns in the UI and `SELECT *` is used in the base query instead.
     'N',  -- MUST be set to 'N' as any custom report you're writing will not be a builtin Report Library
     CURRENT_TIMESTAMP,
     99999999,
@@ -139,7 +137,7 @@ INSERT INTO [dbo].[Report_Library] (
 - For `library_name`, the value **MUST** be the Python library's filename without the `.py` extension (e.g. `example_library.py` -> `example_library`).
 - For `desc_txt`, write a descriptive sentence which will give meaning to anyone reading it from the NBS UI.
 - For `runner` the value **MUST** be `python`.
-- For `column_select_ind` the value **MUST** by either `Y` or `N`.  A value of `Y` will require anyone running the report to set the columns that are in the `SELECT` statement that is used in the `subset_query` sent to the Report Library.
+- For `column_select_ind` the value **MUST** be either `Y` or `N`.  A value of `Y` will require anyone running the report to set the columns that are in the `SELECT` statement that is used in the `subset_query` sent to the Report Library.
 - For `is_builtin_ind`, the value **MUST** be `N` as this is a custom Report Library, not a builtin Report Library.
 
 ### Replacing an Existing SAS Library With Python
@@ -163,7 +161,7 @@ WHERE
 - For `library_name`, the value **MUST** be the Python library's filename without the `.py` extension (e.g. `example_library.py` -> `example_library`).
 - For `desc_txt`, write a descriptive sentence which will give meaning to anyone reading it from the NBS UI.
 - For `runner` the value **MUST** be `python`.
-- Make sure to match the existing `library_name` by putting the SAS library filename is ALL CAPS
+- Make sure to match the existing `library_name` by putting the SAS library filename in ALL CAPS
 
 Examples of completed SAS to Python translation queries are available in the NEDSS-Modernization repo [here](https://github.com/CDCgov/NEDSS-Modernization/tree/main/apps/modernization-api/src/main/resources/db/report/execution/libraries).
 
@@ -211,9 +209,9 @@ binaryData:
   example_library.py: # base64 encoded string here ...
 ```
 
-When mounted, each key in the `ConfigMap` will be a file who's content is the plaintext Python library file encoded as the value.
+When mounted, each key in the `ConfigMap` will be a file whose content is the plaintext Python library file encoded as the value.
 
-The `ConfigMap` itself will then be added to the `report-execution` deployment Helm YAML (note this is a partial YAML file showing only the parts related to the `ConfigMap`):
+The `ConfigMap` itself will then be added to the `report-execution` deployment Helm YAML (note this is a partial YAML file for demonstration and should not be used directly):
 
 ```yaml
 # charts/modernization-api/templates/deployment-report-execution.yaml
@@ -239,7 +237,7 @@ spec:
       # ...
 ```
 
-The value of `mountPath` within the `volumeMounts` section is defined in the Helm values YAML file for the `modernization-api` chart (note this is a partial YAML file showing only the parts related to the `customLibPath`):
+The value of `mountPath` within the `volumeMounts` section is defined in the Helm values YAML file for the `modernization-api` chart (note this is a partial YAML file for demonstration and should not be used directly):
 
 ```yaml
 # charts/modernization-api/values.yaml
