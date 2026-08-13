@@ -282,7 +282,7 @@ and the other to be:
 
 `'{"report_variant": "HIV"}'`
 
-A single Python Report Library (denoted in the `library_name` column) can appear in more than one row in the `NBS_ODSE.dbo.Report_Library` table, so you can have as many variants as you require.  For our example here are some partial SQL statements that would be used to set up the 2 variants in the database:
+A single Python Report Library (denoted in the `library_name` column) can appear in more than one row in the `NBS_ODSE.dbo.Report_Library` table, so you can have as many variants as you require (make sure you update the description so you can tell the difference between the variants in the UI).  For our example here are some partial SQL statements that would be used to set up the 2 variants in the database:
 
 ```sql
 USE [NBS_ODSE];
