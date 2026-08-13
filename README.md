@@ -319,7 +319,7 @@ Once they are added to the database you will be able to select each in the `Repo
 
 ![Library Params Example Dropdown](images/library_params_example_dropdown.png)
 
-The library runner in the Report Execution app is already set up to pass in any value it finds in the `library_params` column (converted from a JSON string to a Python dictionary at runtime) as a parameter named `library_params` to the `execute` method.
+The library runner in the Report Execution service is already set up to pass in any value it finds in the `library_params` column (converted from a JSON string to a Python dictionary at runtime) as a parameter named `library_params` to the `execute` method.
 
 You could set up your Report Library to be something like:
 
