@@ -264,7 +264,7 @@ Once the new Python library has been added to NBS by using the above steps, you 
 
 Once the new Python library has been deployed to NBS and the proper database table has been updated as per the instructions above, the existing report that used to use SAS will still appear in the same spot in the `Reports` section of the NBS UI.
 
-Run the report in the same way as you did before and it will use the Python library that you have updated it with.
+Run the report in the same way as you did before (it will now use the modernized run UI) and it will use the Python library that you have updated it with.
 
 ## Advanced Topics
 
