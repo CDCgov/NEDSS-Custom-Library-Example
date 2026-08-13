@@ -270,7 +270,7 @@ Run the report in the same way as you did before (it will now use the modernized
 
 ### Library Params
 
-Let's say that you write a custom Python Report Library file and there are 2 or more distinct scenarios that you would like this Report Library to handle.  For example let's say that you have a Report Library that can handle both calculations for STD data and HIV data separately.  Ideally you would be able to set up a Report in NBS that would allow a single Report Library to be run separately for STD and HIV.
+Let's say that you write a custom Python Report Library file and there are 2 or more distinct scenarios that you would like this Report Library to handle (for reference, builtin libraries `pa_01`, `pa_02`, `pa_04`, `qa_07`, and the TB reports use this mechanism).  For example let's say that you have a Report Library that can handle both calculations for STD data and HIV data separately.  Ideally you would be able to set up a Report in NBS that would allow a single Report Library to be run separately for STD and HIV.
 
 This is where `library_params` comes in.  It is a separate column in the `NBS_ODSE.dbo.Report_Library` table filled with one JSON object that will be sent in as a Python dictionary into the Report Library.
 
