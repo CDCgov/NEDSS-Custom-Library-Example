@@ -21,7 +21,7 @@
 
 ## Intro
 
-In NBS 6 SAS was used to allow STLTs to write custom report libraries.  In NBS 7 SAS has been phased out in favor of running report libraries using Python.  These Python libraries will be able to query existing databases and return results for viewing in the NBS 7 UI or to be exported to CSV files.
+In NBS 6, SAS was used to allow STLTs to write custom report libraries. In NBS 7, SAS has been phased out in favor of running report libraries using Python. These Python libraries will be able to query existing databases and return results for viewing in the NBS 7 UI or to be exported to CSV files.
 
 These new Python libraries will be executed by the Report Execution app which can be found in the `NEDSS-Modernization` repository:
 
