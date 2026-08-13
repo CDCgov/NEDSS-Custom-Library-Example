@@ -198,6 +198,19 @@ binaryData:
 
 You can see in the above Helm YAML that all Python files from the `charts/modernization-api/custom-libs` directory are retrieved (you can use whichever directory is convenient for you), meaning you would stage whichever Python libraries you wished to install in that directory and Helm would build the k8s `ConfigMap` during the Helm install/upgrade process.
 
+This example's generated k8s `ConfigMap` YAML will look something like this, with each filename as a key and the Python file's contents as a base64 encoded string:
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-modernization-api-report-execution-configmap
+binaryData:
+  example_library.py: # base64 encoded string here ...
+```
+
+When mounted, each key in the `ConfigMap` will be a file who's content is the plaintext Python library file encoded as the value.
+
 The `ConfigMap` itself will then be added to the `report-execution` deployment Helm YAML (note this is a partial YAML file showing only the parts related to the `ConfigMap`):
 
 ```yaml
