@@ -5,11 +5,11 @@
 - [Custom Python NBS Report Libraries](#custom-python-nbs-report-libraries)
   - [Table of Contents](#table-of-contents)
   - [Intro](#intro)
+  - [Process Overview](#process-overview)
   - [Concepts](#concepts)
-    - [Report](#report)
-    - [Report Library](#report-library)
-    - [Python Library](#python-library)
-  - [Example Python Library](#example-python-library)
+  - [Writing a Python Library](#writing-a-python-library)
+    - [Function Parameters For `execute`](#function-parameters-for-execute)
+    - [Notable Types Involved](#notable-types-involved)
   - [Adding a Custom Library to NBS](#adding-a-custom-library-to-nbs)
     - [Adding a Brand New Python Library](#adding-a-brand-new-python-library)
     - [Replacing an Existing SAS Library With Python](#replacing-an-existing-sas-library-with-python)
@@ -36,26 +36,25 @@ apps/report-execution/src/libraries        # builtin libraries
 apps/report-execution/src/libraries/custom # Folder where STLT-made custom libraries are mounted
 ```
 
+## Process Overview
+
+The general flow of writing custom NBS 7 Python report lirbraries and getting them installed goes like:
+
+1. Write a Python library file following the contract outlined in the example
+2. Register or update the Python library file in the `NBS_ODSE.dbo.Report_Library` table
+3. Deploy the `.py` report library file to the `report-execution` pod
+4. Create and/or run the report from the NBS UI
+
+Details will be given below about each of these steps.
+
 ## Concepts
 
-### Report
+- **Report**: A report is the main entity which is used to run individual report libraries (previously written in SAS, now written in Python) using a configured data source in NBS.
+- **Report Library**: Where the actual data lookup and handling logic of the report lives.  In NBS 7 the report libraries are Python files which adhere to a prescribed shape in order to be used in NBS via the Report Execution service.
+- **Python Library File**: A single Python file that adheres to a prescribed contract (see example below) that is called when a report is run from NBS via the Report Execution service.  This is what gets executed by the Report Execution service and what yields the report's data.
+- `Report_Library` **Database Table**: A table within the `NBS_ODSE` database that defines the individual report library files that can be used by reports.
 
-A report is the main entity which is used to run individual report libraries (previously written in SAS, now written in Python) using a configured data source in NBS.
-
-### Report Library
-
-Where the actual data lookup and handling logic of the report lives.  In NBS 7 the report libraries are Python files which adhere to a prescribed shape in order to be used in NBS via the Report Execution app.
-
-A Report Library can either be:
-
-- builtin: pre-built report libraries that are maintained by NBS devs
-- custom: report libraries built by STLTs and used only within their NBS install
-
-### Python Library
-
-A single Python file that adheres to a prescribed shape (see example below) that is called when a report is run from NBS via the Report Execution app.
-
-## Example Python Library
+## Writing a Python Library
 
 Here is a simple example of a Python library which returns unmodified data queried from a given data source:
 
@@ -76,26 +75,29 @@ def execute(
     return ReportResult(content=content)
 ```
 
-- `execute` is the entrypoint for all Python libraries and is how the Report Execution app calls each Python library
-- `subset_query` is the SQL query that is given to the library by NBS to act as the main data source for the report (**NOTE:** all column selections, filters, and security permissions are already baked into the query that is passed in here)
-- `Transaction` represents the database connection and has a method named `query` to execute SQL queries (results returned in a `Table` instance)
-- `Table` is the data format which contains both column names and data which is used to return the result to NBS
-- `ReportResult` is the data shape that is used to return the report's resulting data (via a `Table` instance, assigned to the `content` attribute) to either the NBS UI or the exported CSV
+The primary contract that each Python library needs to have is the `execute` function.  It is what gets called when you run a report in NBS.  Any Python library file which does not have this method defined will not be able to be run by NBS 7.  The parameters are described below (some are required, some are optional).
 
-A note on the `**kwargs` parameter in the above example.  There are several additional parameters that are passed in by the Report Execution app when calling the `execute` method on a given library.  These are:
+### Function Parameters For `execute`
 
-- `trx` - already included in example
-- `subset_query` - already included in example
-- `sort_by` - when running a report from the NBS UI you may select a column to sort by and this will be passed in as a valid SQL string for use in an `ORDER BY` statement.  For instance the choice shown in the following image will be passed in the `sort_by` parameter with the value `[Date Case Closed] DESC`:
-  ![Report Data Sorting](images/report_data_sorting.png)
-- `days_value` - this is a builtin specific value for the `Duplicate Investigations Time Frame` report filter.  If you are converting an existing SAS report which uses this specific report filter you may access it through the `days_value` function parameter.
-- `column_map` - when specific columns are selected in the NBS run report UI, this parameter is built with each column's `column name` (its actual SQL column name) and `column title` (the more human-friendly string describing the column) mapped to one another in a list.  For example if you selected the columns in the UI shown in the following picture:
-  ![Column Select](images/column_select.png)
-   the `column_map` value would then be `[['ADI_900_STATUS', 'ADI_900_STATUS'], ['HIV_AV_THERAPY_EVER_IND', 'Anti-Viral Therapy Ever']]`
-- `library_params` - explained in the "Advanced Topics" section of this document
- 
+There are several parameters that are passed into this function with some of them being optional.  The table below describes them.
+
+| Parameter        | Type                              | Required? | Description                                                                                                                                                                                                                                                   |
+|------------------|-----------------------------------|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `trx`            | `Transaction`                     | yes       | Represents the database connection and has a method named `query` to execute SQL queries (results returned in a `Table` instance).                                                                                                                            |
+| `subset_query`   | `str`                             | yes       | The SQL query that is given to the library by NBS to act as the main data source for the report (**NOTE:** all column selections, filters, and security permissions are already baked into the query that is passed in here).                                 |
+| `sort_by`        | `str \| None`                     | no        | If the user running the report selects a column to sort by, this parameter will be passed in as a valid SQL string for use in an `ORDER BY` statement (e.g. `[Column Name] DESC`).                                                                            |
+| `days_value`     | `int \| None`                     | no        | This is a builtin specific value for the `Duplicate Investigations Time Frame` report filter.  If you are converting an existing SAS report which uses this specific report filter it will be passed in as this parameter.                                    |
+| `column_map`     | `list[list[str]] \| None`         | no        | When specific columns are selected in the NBS run report UI, this parameter is built with each column's `column name` (its actual SQL column name) and `column title` (the more human-friendly string describing the column) mapped to one another in a list. |
+| `library_params` | `dict \| None` (parsed JSON string) | no        | Explained in the "Advanced Topics" section of this document.                                                                                                                                                                                                  |
 
 **Note**: _always_ include the `**kwargs` parameter in your custom library even if you are using all currently available named args. It is possible that future releases could add new arguments passed to the execute function and this ensures your library will continue to work as expected.
+
+### Notable Types Involved
+| Type           | Link                                                                                                                                                | Description                                                                                                                                                               |
+|----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Transaction`  | [link](https://github.com/CDCgov/NEDSS-Modernization/blob/45435091777d4dbe6934d3785115cf2c2f6680bc/apps/report-execution/src/db_transaction.py#L15) | Represents the database connection and has a method named `query` to execute SQL queries (results returned in a `Table` instance).                                        |
+| `Table`        | [link](https://github.com/CDCgov/NEDSS-Modernization/blob/45435091777d4dbe6934d3785115cf2c2f6680bc/apps/report-execution/src/models.py#L26)         | The data format which contains both column names and data which is used to return the result to NBS.                                                                      |
+| `ReportResult` | [link](https://github.com/CDCgov/NEDSS-Modernization/blob/45435091777d4dbe6934d3785115cf2c2f6680bc/apps/report-execution/src/models.py#L114)        | The data shape that is used to return the report's resulting data (via a `Table` instance, assigned to the `content` attribute) to either the NBS UI or the exported CSV. |
 
 ## Adding a Custom Library to NBS
 
@@ -253,7 +255,7 @@ reportExecution:
 Now that you have:
 - Written the Python library
 - Updated the database to register the new Python library
-- Deployed the Python library to the Report Execution app
+- Deployed the Python library to the Report Execution service
 
 you're now ready to run the report from the NBS UI.
 
