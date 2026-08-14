@@ -1,60 +1,58 @@
-# Custom Python NBS Report Libraries
+# Custom Python report libraries for NBS
 
-## Table of Contents
+## Table of contents
 
-- [Intro](#intro)
-- [Process Overview](#process-overview)
+- [Introduction](#introduction)
+- [Process overview](#process-overview)
 - [Concepts](#concepts)
-- [Writing a Python Library](#writing-a-python-library)
-  - [Function Parameters For `execute`](#function-parameters-for-execute)
-  - [Notable Types Involved](#notable-types-involved)
-- [Adding a Custom Library to NBS](#adding-a-custom-library-to-nbs)
-  - [Adding a Brand New Python Library](#adding-a-brand-new-python-library)
-  - [Replacing an Existing SAS Library With Python](#replacing-an-existing-sas-library-with-python)
-  - [Deploying Custom Python Libraries](#deploying-custom-python-libraries)
+- [Writing a Python library](#writing-a-python-library)
+  - [Function parameters for `execute`](#function-parameters-for-execute)
+  - [Notable types](#notable-types)
+- [Adding a custom library to NBS](#adding-a-custom-library-to-nbs)
+  - [Adding a new Python library](#adding-a-new-python-library)
+  - [Replacing an existing SAS library with Python](#replacing-an-existing-sas-library-with-python)
+  - [Deploying custom Python libraries](#deploying-custom-python-libraries)
     - [Using a ConfigMap](#using-a-configmap)
-- [Running the New Report Library](#running-the-new-report-library)
-  - [Creating a Report With the New Python Library](#creating-a-report-with-the-new-python-library)
-  - [Accessing a Report That Was Updated From SAS to Python](#accessing-a-report-that-was-updated-from-sas-to-python)
-- [Advanced Topics](#advanced-topics)
-  - [Library Params](#library-params)
+- [Running the new report library](#running-the-new-report-library)
+  - [Creating a report with the new Python library](#creating-a-report-with-the-new-python-library)
+  - [Accessing a report that was updated from SAS to Python](#accessing-a-report-that-was-updated-from-sas-to-python)
+- [Advanced topics](#advanced-topics)
+  - [Library parameters](#library-parameters)
 
-## Intro
+## Introduction
 
-In NBS 6, SAS was used to allow STLTs to write custom report libraries. In NBS 7, SAS has been phased out in favor of running report libraries using Python. These Python libraries will be able to query existing databases and return results for viewing in the NBS 7 UI or to be exported to CSV files.
+To allow STLTs to write custom report libraries, NBS 6 used the SAS statistical programming environment. NBS 7 replaces SAS with Python for running report libraries. The Python libraries in NBS 7 query existing databases and return results for viewing in the NBS 7 UI or to be exported to CSV files.
 
-These new Python libraries will be executed by the Report Execution service which can be found in the `NEDSS-Modernization` repository:
+The Python libraries are executed in NBS 7 by the Report Execution service, which can be found in the `NEDSS-Modernization` repository: [NEDSS-Modernization](https://github.com/CDCgov/NEDSS-Modernization)
 
-[NEDSS-Modernization](https://github.com/CDCgov/NEDSS-Modernization)
-
-Within the repository the Report Execution service is found at `apps/report-execution` and the Python library files themselves are located at:
+Within the repository, the Report Execution service is found at `apps/report-execution` and the Python library files are located at:
 
 ```
 apps/report-execution/src/libraries        # builtin libraries
 apps/report-execution/src/libraries/custom # Folder where STLT-made custom libraries are mounted
 ```
 
-## Process Overview
+## Process overview
 
-The general flow of writing custom NBS 7 Python report libraries and getting them installed goes like:
+The following high-level process represents the general flow of writing and installing custom Python report libraries for NBS 7:
 
-1. Write a Python library file following the contract outlined in the example
-2. Register or update the Python library file in the `NBS_ODSE.dbo.Report_Library` table
-3. Deploy the `.py` report library file to the `report-execution` pod
-4. Create and/or run the report from the NBS UI
+1. Write a Python library file following the contract outlined in the example in this document.
+2. Register or update the Python library file in the `NBS_ODSE.dbo.Report_Library` table.
+3. Deploy the `.py` report library file to the `report-execution` pod.
+4. Create or run the report from the NBS UI.
 
-Details will be given below about each of these steps.
+The following sections describe each of these steps in detail.
 
 ## Concepts
 
-- **Report**: A report is the main entity which is used to run individual report libraries (previously written in SAS, now written in Python) using a configured data source in NBS.
-- **Report Library**: The file where the actual data lookup and handling logic of the report lives.  In NBS 7 the report libraries are Python files which adhere to a prescribed shape in order to be used in NBS via the Report Execution service.
-- **Python Library File**: A single Python file that adheres to a prescribed contract (see example below) that is called when a report is run from NBS via the Report Execution service.  This is what gets executed by the Report Execution service and what yields the report's data.
-- `Report_Library` **Database Table**: A table within the `NBS_ODSE` database that defines the individual report library files that can be used by reports.
+- **report:** The main entity that runs individual report libraries using a configured data source in NBS.
+- **report library:** The file where the actual data lookup and handling logic of the report lives. Previously written in SAS; now written in Python. In NBS 7, the report libraries are Python files that adhere to a prescribed shape for use in NBS by the Report Execution service.
+- **library file:** A single Python file that adheres to a prescribed contract. The Report Execution service calls this file when a report runs and uses its result as the report's data.
+- `Report_Library` **database table:** A table within the `NBS_ODSE` database that defines the individual report library files that reports can use.
 
-## Writing a Python Library
+## Writing a Python library
 
-Here is a simple example of a Python library which returns unmodified data queried from a given data source:
+Here is a simple example of a Python library that returns unmodified data queried from a given data source:
 
 ```Python
 from src.db_transaction import Transaction
@@ -66,47 +64,48 @@ def execute(
     subset_query: str,
     **kwargs,
 ) -> ReportResult:
-    """Simple example of a Python Report Library."""
+    """Simple example of a Python report library."""
 
     content: Table = trx.query(subset_query)
 
     return ReportResult(content=content)
 ```
 
-The primary contract that each Python library needs to have is the `execute` function.  It is what gets called when you run a report in NBS.  Any Python library file which does not have this method defined will not be able to be run by NBS 7.  The parameters are described below (some are required, some are optional).
+The primary contract that each Python library needs is the `execute` function. NBS calls this function when you run a report. NBS 7 cannot run a Python library file that does not have this method defined. The parameters are described in the following section.
 
-### Function Parameters For `execute`
+### Function parameters for `execute`
 
-There are several parameters that are passed into this function with some of them being optional.  The table below describes them.
+The following table describes the required and optional parameters that are passed into this function.
 
 | Parameter        | Type                              | Required? | Description                                                                                                                                                                                                                                                   |
 |------------------|-----------------------------------|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `trx`            | `Transaction`                     | yes       | Represents the database connection and has a method named `query` to execute SQL queries (results returned in a `Table` instance).                                                                                                                            |
-| `subset_query`   | `str`                             | yes       | The SQL query that is given to the library by NBS to act as the main data source for the report (**NOTE:** all column selections, filters, and security permissions are already baked into the query that is passed in here).                                 |
-| `sort_by`        | `str \| None`                     | no        | If the user running the report selects a column to sort by, this parameter will be passed in as a valid SQL string for use in an `ORDER BY` statement (e.g. `[Column Name] DESC`).                                                                            |
-| `days_value`     | `int \| None`                     | no        | This is a builtin specific value for the `Duplicate Investigations Time Frame` report filter.  If you are converting an existing SAS report which uses this specific report filter it will be passed in as this parameter.                                    |
-| `column_map`     | `list[list[str]] \| None`         | no        | When specific columns are selected in the NBS run report UI, this parameter is built with each column's `column name` (its actual SQL column name) and `column title` (the more human-friendly string describing the column) mapped to one another in a list. |
+| `subset_query`   | `str`                             | yes       | The SQL query NBS gives to the library. This is the main data source for the report. **NOTE:** all column selections, filters, and security permissions are baked into the query.                               |
+| `sort_by`        | `str \| None`                     | no        | When an NBS user selects a column to sort their report, NBS passes this parameter in as a valid SQL string for use in an `ORDER BY` statement (such as `[Column Name] DESC`).                                                                            |
+| `days_value`     | `int \| None`                     | no        | This is a built-in value for the `Duplicate Investigations Time Frame` report filter. If you are converting an existing SAS report that uses this specific report filter, NBS passes it in as this parameter.                                    |
+| `column_map`     | `list[list[str]] \| None`         | no        | When specific columns are selected in the NBS run report UI, NBS builds this parameter from each column's `column name` (its actual SQL column name) and `column title` (the more human-friendly string describing the column) mapped to one another in a list. |
 | `library_params` | `dict \| None` (parsed JSON string) | no        | Explained in the "Advanced Topics" section of this document.                                                                                                                                                                                                  |
 
-**Note**: _always_ include the `**kwargs` parameter in your custom library even if you are using all currently available named args. It is possible that future releases could add new arguments passed to the execute function and this ensures your library will continue to work as expected.
+> **Important**: Always include the `**kwargs` parameter in your custom library even if you are using all currently available named args. Future releases might add new arguments passed to the `execute` function, and this parameter ensures your library will continue to work as expected.
 
-### Notable Types Involved
+### Notable types
+
 | Type           | Link                                                                                                                                                | Description                                                                                                                                                               |
 |----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `Transaction`  | [link](https://github.com/CDCgov/NEDSS-Modernization/blob/45435091777d4dbe6934d3785115cf2c2f6680bc/apps/report-execution/src/db_transaction.py#L15) | Represents the database connection and has a method named `query` to execute SQL queries (results returned in a `Table` instance).                                        |
-| `Table`        | [link](https://github.com/CDCgov/NEDSS-Modernization/blob/45435091777d4dbe6934d3785115cf2c2f6680bc/apps/report-execution/src/models.py#L26)         | The data format which contains both column names and data which is used to return the result to NBS.                                                                      |
-| `ReportResult` | [link](https://github.com/CDCgov/NEDSS-Modernization/blob/45435091777d4dbe6934d3785115cf2c2f6680bc/apps/report-execution/src/models.py#L114)        | The data shape that is used to return the report's resulting data (via a `Table` instance, assigned to the `content` attribute) to either the NBS UI or the exported CSV. |
+| `Transaction`  | [db_transaction.py](https://github.com/CDCgov/NEDSS-Modernization/blob/45435091777d4dbe6934d3785115cf2c2f6680bc/apps/report-execution/src/db_transaction.py#L15) | Represents the database connection and has a method named `query` to execute SQL queries (results returned in a `Table` instance).                                        |
+| `Table`        | [models.py](https://github.com/CDCgov/NEDSS-Modernization/blob/45435091777d4dbe6934d3785115cf2c2f6680bc/apps/report-execution/src/models.py#L26)         | The data format that holds column names and data, used to return results to NBS.                                                                      |
+| `ReportResult` | [models.py](https://github.com/CDCgov/NEDSS-Modernization/blob/45435091777d4dbe6934d3785115cf2c2f6680bc/apps/report-execution/src/models.py#L114)        | The data shape that is used to return the resulting report data (via a `Table` instance, assigned to the `content` attribute) to either the NBS UI or the exported CSV. |
 
-## Adding a Custom Library to NBS
+## Adding a custom library to NBS
 
-There are 2 possible scenarios you can have for adding a custom library to NBS 7:
+There are two possible scenarios for adding a custom library to NBS 7:
 
-1. You have created a brand new Python library that has never been used before
-2. You have converted an existing SAS library into Python and need to replace it
+- You have created [a brand new Python library](#adding-a-brand-new-python-library) that has never been used before
+- You have converted [an existing SAS library](#replacing-an-existing-sas-library-with-python) into Python and need to replace it
 
-### Adding a Brand New Python Library
+### Adding a new Python library
 
-There is a table named `NBS_ODSE.dbo.Report_Library` that must be manually updated to include information about a given custom Report Library.  The following query should be used as a template for this task:
+You must manually update the `NBS_ODSE.dbo.Report_Library` table to include information about a given custom report library. Use the following query as a template for this task:
 
 ```sql
 USE [NBS_ODSE];
@@ -123,10 +122,10 @@ INSERT INTO [dbo].[Report_Library] (
     last_chg_user_id
 ) VALUES (
     'example_library',  -- MUST be the Python library's filename without ".py"
-    'This is an example library meant for instruction.',  -- Short description of Report Library
+    'This is an example library meant for instruction.',  -- Short description of report library
     'python',  -- MUST have the value 'python'
-    'N',  -- MUST be either 'Y' or 'N'.  'Y' means columns are selectable in the UI and the selected columns will be included in the `SELECT` statement in the base query. 'N' means users do not select columns in the UI and `SELECT *` is used in the base query instead.
-    'N',  -- MUST be set to 'N' as any custom report you're writing will not be a builtin Report Library
+    'N',  -- MUST be either 'Y' or 'N'. 'Y' means columns are selectable in the UI and the selected columns will be included in the `SELECT` statement in the base query. 'N' means users do not select columns in the UI and `SELECT *` is used in the base query instead.
+    'N',  -- MUST be set to 'N' as any custom report you're writing will not be a builtin report library
     CURRENT_TIMESTAMP,
     99999999,  -- semi-standard system update value
     CURRENT_TIMESTAMP,
@@ -134,9 +133,9 @@ INSERT INTO [dbo].[Report_Library] (
 );
 ```
 
-### Replacing an Existing SAS Library With Python
+### Replacing an existing SAS library with Python
 
-If you are replacing an existing SAS library with Python, then the SAS library should already be present in the `NBS_ODSE.dbo.Report_Library` table.  Use the following query as a template to update the existing library to use the new Python library instead:
+If you are replacing an existing SAS library with Python, then the SAS library should already be present in the `NBS_ODSE.dbo.Report_Library` table. Use the following query as a template to update the existing library to use the new Python library instead:
 
 ```sql
 USE [NBS_ODSE];
@@ -149,28 +148,26 @@ SET
     last_chg_time = CURRENT_TIMESTAMP,
     last_chg_user_id = 99999999  -- semi-standard system update value
 WHERE
-    UPPER(library_name) = 'EXISTING_LIBRARY.SAS';  -- MUST be the exact  SAS library file name in ALL CAPS
+    UPPER(library_name) = 'EXISTING_LIBRARY.SAS';  -- MUST be the exact SAS library file name in ALL CAPS
 ```
 
-Examples of completed SAS to Python translation queries are available in the NEDSS-Modernization repo [here](https://github.com/CDCgov/NEDSS-Modernization/tree/main/apps/modernization-api/src/main/resources/db/report/execution/libraries).
+Examples of completed SAS to Python translation queries are available in the [NEDSS-Modernization repo](https://github.com/CDCgov/NEDSS-Modernization/tree/main/apps/modernization-api/src/main/resources/db/report/execution/libraries).
 
-### Deploying Custom Python Libraries
+### Deploying custom Python libraries
 
-In order for custom Python libraries to work they will need to be present in the deployment of `report-execution`.  Specifically all custom reports MUST be placed in the directory of this `report-execution` pod:
+For custom Python libraries to work, you must include them when you deploy the `report-execution` service. Specifically, you must place all custom report library files in the following directory of the `report-execution` pod:
 
 ```
 /usr/report-execution/src/libraries/custom/
 ```
 
-This means that as part of the helm/k8s installation of `report-execution` some form of storage will need to be in place in order to mount the files in that location.
+> **Important:** To mount the files in this location, you must provision storage as part of the Helm/k8s installation of `report-execution`.
 
 #### Using a ConfigMap
 
-One way to do this is through the use of a [k8s ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/).  The idea here is that you would use the `ConfigMap` to store individual Python library files as binary data (in the form of base64 strings).
+One way to do this is through the use of a [k8s ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/). You can use the `ConfigMap` to store individual Python library files as binary data in the form of base64 strings.
 
-In this example the [NEDSS-Helm](https://github.com/CDCgov/NEDSS-Helm/) repository is used and configuration is added to the `modernization-api` Helm chart.
-
-Here is an example of a `ConfigMap` which takes in all Python files from a specific directory and stores them as binary data:
+The following example uses the [NEDSS-Helm](https://github.com/CDCgov/NEDSS-Helm/) repository and adds configuration to the `modernization-api` Helm chart. The example `ConfigMap` takes in all Python files from a specific directory and stores them as binary data:
 
 ```yaml
 # charts/modernization-api/templates/configmap-report-execution.yaml
@@ -185,9 +182,9 @@ binaryData:
 {{- end }}
 ```
 
-You can see in the above Helm YAML that all Python files from the `charts/modernization-api/custom-libs` directory are retrieved (you can use whichever directory is convenient for you), meaning you would stage whichever Python libraries you wished to install in that directory and Helm would build the k8s `ConfigMap` during the Helm install/upgrade process.
+In this example, all Python files from the `charts/modernization-api/custom-libs` directory are retrieved. Stage whichever Python libraries you want to install in that directory, and Helm builds the `ConfigMap`. You can use any directory that is convenient for your scenario.
 
-This example's generated k8s `ConfigMap` YAML will look something like this, with each filename as a key and the Python file's contents as a base64 encoded string:
+The generated k8s `ConfigMap` YAML will look similar to the following, with each filename as a key and the contents of the Python file as a base64 encoded string:
 
 ```yaml
 apiVersion: v1
@@ -198,9 +195,11 @@ binaryData:
   example_library.py: # base64 encoded string here ...
 ```
 
-When mounted, each key in the `ConfigMap` will be a file whose content is the plaintext Python library file encoded as the value.
+When mounted, Kubernetes decodes each `ConfigMap` entry back to the original plaintext Python file, using the key as the filename.
 
-The `ConfigMap` itself will then be added to the `report-execution` deployment Helm YAML (note this is a partial YAML file for demonstration and should not be used directly):
+You then add the `ConfigMap` to the `report-execution` deployment Helm YAML:
+
+  > **Important:** This is a partial YAML file for demonstration and should not be used directly.
 
 ```yaml
 # charts/modernization-api/templates/deployment-report-execution.yaml
@@ -220,13 +219,15 @@ spec:
             readOnly: true
       volumes:
         - name: {{ include "modernization-api.reportExecution.fullname" . }}-configmap
-            configMap:
-              name: {{ include "modernization-api.reportExecution.fullname" . }}-configmap
-              defaultMode: 0777
+          configMap:
+            name: {{ include "modernization-api.reportExecution.fullname" . }}-configmap
+            defaultMode: 0777
       # ...
 ```
 
-The value of `mountPath` within the `volumeMounts` section is defined in the Helm values YAML file for the `modernization-api` chart (note this is a partial YAML file for demonstration and should not be used directly):
+The value of `mountPath` within the `volumeMounts` section is defined in the Helm values YAML file for the `modernization-api` chart:
+
+  > **Important:** This is a partial YAML file for demonstration and should not be used directly.
 
 ```yaml
 # charts/modernization-api/values.yaml
@@ -237,56 +238,63 @@ reportExecution:
   customLibPath: /usr/report-execution/src/libraries/custom/
 ```
 
-## Running the New Report Library
+## Running the new report library
 
-Now that you have:
+Before running the new library from the NBS UI, confirm that you have completed the following:
+
 - Written the Python library
 - Updated the database to register the new Python library
 - Deployed the Python library to the Report Execution service
 
-you're now ready to run the report from the NBS UI.
+Use one of the following methods to run a report with the new library:
 
-If it is a brand new Report Library, you will need to create a new report in the NBS UI.  If you have replaced an existing SAS library with the new Python library, the report should run as-is from the NBS UI.
+- If you are running a brand new report library, [create a new report in the NBS UI](#creating-a-report-with-the-new-python-library).
+- If you have replaced an existing SAS library with the new Python library, [run the existing report from the NBS UI](#accessing-a-report-that-was-updated-from-sas-to-python).
 
-### Creating a Report With the New Python Library
+### Creating a report with the new Python library
 
-Once the new Python library has been added to NBS by using the above steps, you will need to create a new Report in the NBS UI:
+Once you have added the new Python library to NBS, create a new report:
 
-- Navigate to `System Management` > `Report Management`, click on `Manage Reports`.
-- Click on `Create`
-- Fill out the `Add report` configuration screen
-- You will find the new custom Python library in the `Report execution library` dropdown (**NOTE: if it does not appear in the dropdown, be sure to clear out your browser's Local Storage as the values in the dropdown are cached there**)
+1. Log in to NBS as a user with **Report Management** permission.
+2. Navigate to **System Management** > **Report Management**, then select **Manage Reports**.
+3. Select **Create**.
+4. Fill out the **Add report** configuration screen.
+5. Find the new custom Python library in the **Report execution library** dropdown.
 
-  ![Add Report Configuration Library Dropdown](images/add_report_execution_library_dropdown.png)
-- Your configured report will look something like this:
-  ![Add Report Configuration](images/add_report_configuration.png)
-- Click `Submit`
-- Navigate to `Reports` and your new report will appear in the group and section that you configured them for:
-  ![Reports List](images/reports_list.png)
+   > **Note:** If the library does not appear in the dropdown, clear your browser's local storage. The dropdown values are cached there.
 
-### Accessing a Report That Was Updated From SAS to Python
+   The `Report execution library` dropdown lists available Python report libraries by name, as shown in the following image:
 
-Once the new Python library has been deployed to NBS and the proper database table has been updated as per the instructions above, the existing report that used to use SAS will still appear in the same spot in the `Reports` section of the NBS UI.
+   ![Screenshot of the Report execution library dropdown, listing SAS libraries such as CA04 and CA05 alongside the custom Python library "example_library," each with a short description](images/add_report_execution_library_dropdown.png)
 
-Run the report in the same way as you did before (it will now use the modernized run UI) and it will use the Python library that you have updated it with.
+   A completed report configuration using a custom Python library looks like this:
 
-## Advanced Topics
+   ![Screenshot of the Add report configuration screen, showing the Report source data source field and the Report configuration section with Name, Description, Owner, Group, Section name, and Report execution library fields filled in, with "example_library" selected as the execution library](images/add_report_configuration.png)
 
-### Library Params
+6. Select **Submit**.
+7. Navigate to **Reports**.
 
-Let's say that you write a custom Python Report Library file and there are 2 or more distinct scenarios that you would like this Report Library to handle (for reference, builtin libraries `pa_01`, `pa_02`, `pa_04`, `qa_07`, and the TB reports use this mechanism).  For example let's say that you have a Report Library that can handle both calculations for STD data and HIV data separately.  Ideally you would be able to set up a Report in NBS that would allow a single Report Library to be run separately for STD and HIV.
+   The new report appears in the group and section you configured:
 
-This is where `library_params` comes in.  It is a separate column in the `NBS_ODSE.dbo.Report_Library` table filled with one JSON object that will be sent in as a Python dictionary into the Report Library.
+   ![Screenshot of the Public Reports list under Default Report Section, showing "Example Report" with a Run link](images/reports_list.png)
 
-Using the above example you could set the `library_params` value for one row of the `Report_Library` table to be:
+### Accessing a report that was updated from SAS to Python
 
-`'{"report_variant": "STD"}'`
+After you deploy the new Python library to NBS and update the database table, the existing report appears in the same spot in the Reports section, now backed by the Python library instead of SAS.
 
-and the other to be:
+Run the report the same way as before. It now uses the modernized run UI and the Python library that you configured.
 
-`'{"report_variant": "HIV"}'`
+## Advanced topics
 
-A single Python Report Library (denoted in the `library_name` column) can appear in more than one row in the `NBS_ODSE.dbo.Report_Library` table, so you can have as many variants as you require (make sure you update the description so you can tell the difference between the variants in the UI).  For our example here are some partial SQL statements that would be used to set up the 2 variants in the database:
+### Library parameters
+
+A single Python report library can handle two or more distinct scenarios. For example, a report library might calculate STD data and HIV data separately. The `library_params` mechanism lets you configure NBS to run the same report library separately for each scenario, rather than writing a separate library for each one. The built-in libraries `pa_01`, `pa_02`, `pa_04`, `qa_07`, and the TB reports already use this mechanism.
+
+To create a variant, add a row to the `NBS_ODSE.dbo.Report_Library` table with the same `library_name` and a JSON object in the `library_params` column. NBS passes this JSON object into the report library as a Python dictionary. For example, you could set `library_params` to `'{"report_variant": "STD"}'` for one row and `'{"report_variant": "HIV"}'` for another.
+
+> **Important:** All users with access to the Reports module can view the description for each variant in the NBS application, so make sure the `description` value is accurate and clearly distinguishes the variant. 
+
+The following partial SQL statements set up the two variants from this example in the database:
 
 ```sql
 USE [NBS_ODSE];
@@ -319,13 +327,13 @@ INSERT INTO [dbo].[Report_Library] (
 
 ```
 
-Once they are added to the database you will be able to select each in the `Report execution library` dropdown in the `Add report` screen:
+Once you add the variants to the database, you can select each in the **Report execution library** dropdown on the **Add report** screen:
 
-![Library Params Example Dropdown](images/library_params_example_dropdown.png)
+![Screenshot of the Report execution library dropdown, showing "lp_example" listed twice, once with the description "lp_example with STD variant" and once with "lp_example with HIV variant"](images/library_params_example_dropdown.png)
 
-The library runner in the Report Execution service is already set up to pass in any value it finds in the `library_params` column (converted from a JSON string to a Python dictionary at runtime) as a parameter named `library_params` to the `execute` method.
+The library runner in the Report Execution service is set up to pass in any value it finds in the `library_params` column to the `execute` method as a parameter named `library_params`. The value is converted from a JSON string to a Python dictionary at runtime.
 
-You could set up your Report Library to be something like:
+As an example, you could set up your report library to be similar to the following:
 
 ```Python
 from src.db_transaction import Transaction
@@ -338,7 +346,7 @@ def execute(
     library_params: dict,
     **kwargs,
 ) -> ReportResult:
-    """An example of using `library_params` in your Report Library."""
+    """An example of using `library_params` in your report library."""
 
     content: Table = trx.query(subset_query)
 
@@ -352,4 +360,4 @@ def execute(
     # ...
 ```
 
-As you can see in the body of the Report Library you can now branch off your logic based on what is present in the `library_params` dict.
+The report library's `execute` function can branch its logic based on the values in the `library_params` dictionary.
