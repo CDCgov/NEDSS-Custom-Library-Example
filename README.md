@@ -100,7 +100,7 @@ The following table describes the required and optional parameters that are pass
 
 There are two possible scenarios for adding a custom library to NBS 7:
 
-- You have created [a brand new Python library](#adding-a-brand-new-python-library) that has never been used before
+- You have created [a brand new Python library](#adding-a-new-python-library) that has never been used before
 - You have converted [an existing SAS library](#replacing-an-existing-sas-library-with-python) into Python and need to replace it
 
 ### Adding a new Python library
