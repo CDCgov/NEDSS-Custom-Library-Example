@@ -12,10 +12,10 @@ def execute(
     and counts the number of records for each group."""
 
     query = f"""
-    WITH subset AS {subset_query}
-    SELECT {', '.join([f"[{col[1]}]" for col in column_map])}, COUNT(*) AS record_count
+    WITH subset AS ({subset_query})
+    SELECT {', '.join([f"{col[0]} AS [{col[1]}]" for col in column_map])}, COUNT(*) AS record_count
     FROM subset
-    GROUP BY {', '.join(f'[{col[1]}]' for col in column_map])}
+    GROUP BY {', '.join([f'{col[0]}' for col in column_map])}
     """
 
     content: Table = trx.query(query)
