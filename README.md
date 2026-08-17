@@ -70,6 +70,7 @@ def execute(
 
     return ReportResult(content=content)
 ```
+> **Note:** If you're looking for a more detailed example library, one is located [here](example_library.py) in this repository.  You may also reference the built-in libraries in the [NEDSS-Modernization](https://github.com/CDCgov/NEDSS-Modernization/tree/main/apps/report-execution/src/libraries) repository.
 
 The primary contract that each Python library needs is the `execute` function. NBS calls this function when you run a report. NBS 7 cannot run a Python library file that does not have this method defined. The parameters are described in the following section.
 
