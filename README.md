@@ -123,7 +123,7 @@ INSERT INTO [dbo].[Report_Library] (
     last_chg_time,
     last_chg_user_id
 ) VALUES (
-    'example_library',  -- MUST be the Python library's filename without ".py"
+    'example_library',  -- MUST be the Python library's filename (case-sensitive) without ".py"
     'This is an example library meant for instruction.',  -- Short description of report library
     'python',  -- MUST have the value 'python'
     'N',  -- MUST be either 'Y' or 'N'. 'Y' means columns are selectable in the UI and the selected columns will be included in the `SELECT` statement in the base query. 'N' means users do not select columns in the UI and `SELECT *` is used in the base query instead.
@@ -152,7 +152,7 @@ WHERE UPPER(rl.library_name) = UPPER(location);
 -- update the existing SAS library to its Python equivalent
 UPDATE [dbo].[Report_Library]
 SET
-    library_name = 'example_library',  -- MUST be the Python library's filename without ".py"
+    library_name = 'example_library',  -- MUST be the Python library's filename (case-sensitive) without ".py"
     runner = 'python',  -- MUST have the value 'python'
     desc_txt = 'This is an example library meant for instruction.',  -- Short description of library
     last_chg_time = CURRENT_TIMESTAMP,
@@ -316,7 +316,7 @@ INSERT INTO [dbo].[Report_Library] (
     library_params,
     -- ... incomplete for brevity
 ) VALUES (
-    'lp_example',  -- MUST be the Python library's filename without ".py"
+    'lp_example',  -- MUST be the Python library's filename (case-sensitive) without ".py"
     'lp_example with STD variant', -- be sure this is descriptive to what is present in `library_params`!
     '{"report_variant": "STD"}' -- MUST be valid JSON
     -- ... incomplete for brevity
@@ -329,7 +329,7 @@ INSERT INTO [dbo].[Report_Library] (
     library_params,
     -- ... incomplete for brevity
 ) VALUES (
-    'lp_example',  -- MUST be the Python library's filename without ".py"
+    'lp_example',  -- MUST be the Python library's filename (case-sensitive) without ".py"
     'lp_example with HIV variant', -- be sure this is descriptive to what is present in `library_params`!
     '{"report_variant": "HIV"}' -- MUST be valid JSON
     -- ... incomplete for brevity
