@@ -111,6 +111,7 @@ You must manually update the `NBS_ODSE.dbo.Report_Library` table to include info
 ```sql
 USE [NBS_ODSE];
 
+-- insert new Python report library
 INSERT INTO [dbo].[Report_Library] (
     library_name,
     desc_txt,
@@ -141,6 +142,14 @@ If you are replacing an existing SAS library with Python, then the SAS library s
 ```sql
 USE [NBS_ODSE];
 
+-- ensure all reports using SAS libraries have up-to-date `library_uid` references
+UPDATE [dbo].[Report]
+SET
+    library_uid = rl.library_uid
+FROM [dbo].[Report_Library] rl
+WHERE UPPER(rl.library_name) = UPPER(location);
+
+-- update the existing SAS library to its Python equivalent
 UPDATE [dbo].[Report_Library]
 SET
     library_name = 'example_library',  -- MUST be the Python library's filename without ".py"
@@ -293,7 +302,7 @@ A single Python report library can handle two or more distinct scenarios. For ex
 
 To create a variant, add a row to the `NBS_ODSE.dbo.Report_Library` table with the same `library_name` and a JSON object in the `library_params` column. NBS passes this JSON object into the report library as a Python dictionary. For example, you could set `library_params` to `'{"report_variant": "STD"}'` for one row and `'{"report_variant": "HIV"}'` for another.
 
-> **Important:** All users with access to the Reports module can view the description for each variant in the NBS application, so make sure the `description` value is accurate and clearly distinguishes the variant. 
+> **Important:** All users with access to the Reports module can view the description for each variant in the NBS application, so make sure the `description` value is accurate and clearly distinguishes the variant.
 
 The following partial SQL statements set up the two variants from this example in the database:
 
