@@ -18,6 +18,10 @@ def execute(
     GROUP BY {', '.join([f'{col[0]}' for col in column_map])}
     """
 
+    sort_by = kwargs.get('sort_by')
+    if sort_by:
+        query += ' ORDER BY ' + sort_by
+
     content: Table = trx.query(query)
 
     return ReportResult(content=content)
