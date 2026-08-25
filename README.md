@@ -164,6 +164,7 @@ SET
     library_name = 'example_library',  -- MUST be the Python library's filename (case-sensitive) without ".py"
     runner = 'python',  -- MUST have the value 'python'
     desc_txt = 'This is an example library meant for instruction.',  -- Short description of library
+    is_builtin_ind = 'N', -- MUST be set to 'N' as any custom report you're writing will not be a builtin report library
     last_chg_time = CURRENT_TIMESTAMP,
     last_chg_user_id = 99999999  -- semi-standard system update value
 WHERE
