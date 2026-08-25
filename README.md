@@ -8,6 +8,7 @@
 - [Writing a Python library](#writing-a-python-library)
   - [Function parameters for `execute`](#function-parameters-for-execute)
   - [Notable types](#notable-types)
+  - [Pandas](#pandas)
 - [Adding a custom library to NBS](#adding-a-custom-library-to-nbs)
   - [Adding a new Python library](#adding-a-new-python-library)
   - [Replacing an existing SAS library with Python](#replacing-an-existing-sas-library-with-python)
@@ -96,6 +97,14 @@ The following table describes the required and optional parameters that are pass
 | `Transaction`  | [db_transaction.py](https://github.com/CDCgov/NEDSS-Modernization/blob/main/apps/report-execution/src/db_transaction.py) | Represents the database connection and has a method named `query` to execute SQL queries (results returned in a `Table` instance).                                        |
 | `Table`        | [models.py](https://github.com/CDCgov/NEDSS-Modernization/blob/main/apps/report-execution/src/models.py)         | The data format that holds column names and data, used to return results to NBS.                                                                      |
 | `ReportResult` | [models.py](https://github.com/CDCgov/NEDSS-Modernization/blob/main/apps/report-execution/src/models.py)        | The data shape that is used to return the resulting report data (via a `Table` instance, assigned to the `content` attribute) to either the NBS UI or the exported CSV. |
+
+### Pandas
+
+The [Pandas](https://pandas.pydata.org/) data analysis library is available to you to use within your custom Python library.  Simply place the following at the top of your file:
+
+```python
+import pandas
+```
 
 ## Adding a custom library to NBS
 
