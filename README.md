@@ -165,6 +165,7 @@ SET
     runner = 'python',  -- MUST have the value 'python'
     desc_txt = 'This is an example library meant for instruction.',  -- Short description of library
     is_builtin_ind = 'N', -- MUST be set to 'N' as any custom report you're writing will not be a builtin report library
+    column_select_ind = 'N',  -- MUST be either 'Y' or 'N'. 'Y' means columns are selectable in the UI and the selected columns will be included in the `SELECT` statement in the base query. 'N' means users do not select columns in the UI and `SELECT *` is used in the base query instead.
     last_chg_time = CURRENT_TIMESTAMP,
     last_chg_user_id = 99999999  -- semi-standard system update value
 WHERE
