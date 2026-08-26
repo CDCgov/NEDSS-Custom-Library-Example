@@ -6,6 +6,7 @@ def execute(
     trx: Transaction,
     subset_query: str,
     column_map: list[list[str]],
+    sort_by: str | None,
     **kwargs,
 ) -> ReportResult:
     """Simple example of a Python report library that groups on the selected columns
