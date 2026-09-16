@@ -6,13 +6,6 @@
 */
 USE [NBS_ODSE]
 
-/*===============================================================================
-Run this script with each `DOC_TYPE_CD` value for all eCR v3.1 `MSG_XML_MAPPING` rows
-By default it will run for DOC_TYPE_CD=2.16.840.1.113883.10.20.15.2^2022-05-01
-================================================================================*/
-
-SET @DOC_TYPE_CD = '2.16.840.1.113883.10.20.15.2^2022-05-01'
-
 -- Drop impacted filter values
 DELETE fv FROM dbo.Filter_Value fv
     LEFT JOIN dbo.Report_Filter rf ON fv.report_filter_uid = rf.report_filter_uid
