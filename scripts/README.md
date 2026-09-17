@@ -5,7 +5,7 @@ library metadata from the `NBS_ODS` database when migrating to Python
 report libraries.
 
 ```
-Warning: Executing these scripts permanently deletes report configurations, user 
+WARNING: Executing these scripts permanently deletes report configurations, user 
 display choices, and saved filter values. Always back up the NBS_ODS database 
 before running cleanup scripts in production environments.
 ```
