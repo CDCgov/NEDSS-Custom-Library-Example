@@ -44,6 +44,10 @@ The following high-level process represents the general flow of writing and inst
 
 The following sections describe each of these steps in detail.
 
+> [!TIP]
+> **Migrating from SAS?**
+> If you need to purge legacy SAS report definitions before registering your Python library, see the [Legacy SAS Report Database Cleanup Guide](./scripts/README.md).
+
 ## Concepts
 
 - **report:** The main entity that runs individual report libraries using a configured data source in NBS.
@@ -173,6 +177,9 @@ WHERE
 ```
 
 Examples of completed SAS to Python translation queries are available in the [NEDSS-Modernization repo](https://github.com/CDCgov/NEDSS-Modernization/tree/main/apps/modernization-api/src/main/resources/db/report/execution/libraries).
+
+> **Alternative Cleanup Method:**
+> Instead of updating existing rows in-place, you can completely remove legacy SAS reports and libraries from `NBS_ODS` using the scripts documented in [Legacy SAS Report Database Cleanup Guide](./scripts/README.md).
 
 ### Deploying custom Python libraries
 
